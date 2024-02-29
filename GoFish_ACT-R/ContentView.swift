@@ -244,23 +244,7 @@ struct ContentView: View {
                 player1
                     .frame(maxWidth: 250.0)
             }
-        
         }
-//        VStack {
-//            HStack {
-//                Image(systemName: "globe")
-//                    .imageScale(.large)
-//                    .foregroundStyle(.tint)
-//                Text("Hello, testing!")
-//                    .font(.largeTitle)
-//                    .fontWeight(.bold)
-//                    .multilineTextAlignment(.center)
-//            }
-//            Text("This is a test application to test whether the app works on the testing environment MacOS on Windows")
-//                .font(.body)
-//                .padding(.top)
-//            Spacer()
-//        }
         .padding()
     }
 }
