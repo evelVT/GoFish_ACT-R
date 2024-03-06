@@ -7,245 +7,251 @@
 
 import SwiftUI
 
-struct Card: View {
-    @State var rank: String
-    @State var symbol: String
-    @State var image: Image
+
+// Card Model
+struct Card: Identifiable, Equatable {
+    let id = UUID() //weird
+    let rank: Int
+    let suit: String
     
-    var body: some View {
-        ZStack {
-            image
-                .rotationEffect(.degrees(90))
-                .scaleEffect(2)
-                .frame(height:36)
-                .background(Color.white)
-                Text("\(self.rank)")
-                .padding(.trailing, 11.0)
-                .padding(.top, 5)
-        }
+    var description: String {
+        return " \(rank) of \(suit)"
+    }
+    
+    static func ==(lhs: Card, rhs: Card) -> Bool {
+        return lhs.rank == rhs.rank && lhs.suit == rhs.suit
     }
 }
 
-struct HandView: View {
-    @State var cards: [Card]
-    var cardWidth = 25
+// Deck Model
+class Deck: ObservableObject {
+    @Published private var cards: [Card] //published <- update views when change
     
-    var body: some View {
-        ZStack {
-            ForEach(cards.indices, id: \.self) { index in
-                cards[index]
-                    .frame(height:50, alignment: .center)
-                    .offset(x: cardOffsetX(for: index),
-                            y: cardOffsetY(for: index))
+    init() {
+        var deck = [Card]() //weird
+        let suits = ["Hearts", "Diamonds", "Clubs", "Spades"]
+        for suit in suits {
+            for rank in 1...13 {
+                deck.append(Card(rank: rank, suit: suit))
             }
         }
-        .offset(x: handOffset())
+        cards = deck.shuffled()
     }
     
-    private func cardOffsetX(for index: Int) -> CGFloat {
-        let offset = cardWidth * index
-        return CGFloat(offset)
+    func drawCard() -> Card? {
+        print("Drawing from deck")
+        if !cards.isEmpty {
+            return cards.removeFirst()
+        }
+        return nil
+    }
+}
+
+// Player Model
+class Player: ObservableObject {
+    @Published var hand: [Card] = []
+    @Published var score: Int = 0
+    
+    let name: String
+    
+    init(name: String) {
+        self.name = name
     }
     
-    private func cardOffsetY(for index: Int) -> CGFloat {
-        let offset = index
-        return CGFloat(offset)
+    // _ is there so addCard(card) can be used instead of addCard(card: card)
+    func addCard(_ card: Card) {
+        hand.append(card)
+        print("Card \(card) added!")
+        print("Now holding \(hand.count) cards")
     }
     
-    private func handOffset() -> CGFloat {
-        let offset = -(cardWidth * (cards.count-1))/2
-        return CGFloat(offset)
-    }
-    
-    func cardCount(cards: [Card]) -> CGFloat {
-        return CGFloat(cards.count)
-    }
-    
-    func addCard(card: Card) {
-        cards.append(card)
-    }
-    
-    func removeCard(rank: String) -> [Card] {
-        cards = cards.filter{$0.rank != rank}
-        return cards
+    func removeCard(_ card: Card) {
+        if let index = hand.firstIndex(of: card) {
+            hand.remove(at: index)
+        }
     }
 }
 
 
+// Player View
 struct PlayerView: View {
-    @State var name: String
-    @State var hand: HandView
-    @State var score: String
-    @State var icon: Image //Image(systemName: "faceid")
-    @State var fishIcon: Bool //Image(systemName: "dog.fill")
+    // Variables
+    @StateObject var player: Player
+    var cardScale = CGFloat(3.5)
+    var cardWidth = 25
     
+    // Body
     var body: some View {
         VStack(alignment:.center, spacing: 0) {
             // Player's hand
-            HStack(spacing:0) {
-                Spacer()
-                hand
-                Spacer()
+            HStack {
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing:-5) {
+                        ForEach(Array(player.hand.enumerated()), id: \.offset) { index, card in
+                            ZStack {
+                                Rectangle()
+                                    .fill(Color.white)
+                                    .frame(width:12*cardScale, height:18*cardScale)
+                                    .cornerRadius(1)
+                                    .shadow(color: .black, radius:4, x:-5, y:5)
+                                Image(systemName:"creditcard")
+                                    .foregroundColor(Color.red)
+                                    .rotationEffect(.degrees(90))
+                                    .scaleEffect(cardScale)
+                                Text("\(card.rank)")
+                                    .padding(.trailing, 5.5*cardScale)
+                                    .padding(.top, 5)
+                            }
+                            .offset(y: cardOffsetY(for: index))
+                        }
+                    }
+                }
+                .scrollClipDisabled()
             }
-            .frame(height: 50, alignment: /*@START_MENU_TOKEN@*/.center/*@END_MENU_TOKEN@*/).border(Color.red)
-            .padding(5.0)
+            .padding(5)
+            .frame(height: 100)
             .background(Color.orange)
-            .alignmentGuide(HorizontalAlignment.center, computeValue:{d in d[HorizontalAlignment.center]})
             
-            // Player Indicator and Fish
-            HStack(alignment: .center) {
+            HStack(alignment:.center) {
                 Spacer()
                 HStack(spacing:1) {
                     Image(systemName:"creditcard")
                         .rotationEffect(.degrees(90))
-                    Text("\(score)")
+                    Text(" \(player.score)")
                 }
                 Spacer()
-                VStack {
-                    icon
-                    Text("\(name)")
-                        
+                HStack {
+                    Image(systemName:"faceid")
+                    Text("\(player.name)")
                 }
                 Spacer()
-                if fishIcon {
-                    Image(systemName: "dog.fill")
-                }
+                Image(systemName:"dog.fill")
                 Spacer()
             }
-            .padding(.bottom)
-            .padding(.top, 5.0)
+            .padding(8)
             .background(Color.blue)
-            .frame(alignment: .center).border(Color.blue)
         }
         .background(Color.white)
-        .frame(width: 300, alignment: .center).border(/*@START_MENU_TOKEN@*/Color.black/*@END_MENU_TOKEN@*/)
+        .cornerRadius(10)
+    }
+    private func cardOffsetX(for index: Int) -> CGFloat {
+        let offset = -cardWidth * index
+        return CGFloat(offset)
+    }
+    private func cardOffsetY(for index: Int) -> CGFloat {
+        let offset = index
+        return CGFloat(offset)
+    }
+    private func handOffset() -> CGFloat {
+        let offset = -(cardWidth * (player.hand.count-1))/2
+        return CGFloat(offset)
     }
 }
 
+// PileView
+struct DrawpileView: View {
+    @StateObject var playerturn: Player
+    @StateObject var deck: Deck
 
-struct ContentView: View {
-    @State var player1 = PlayerView(name: "you",
-                                    hand: HandView(cards: [Card(rank: "2",
-                                                                symbol: "hearts",
-                                                                image: Image(systemName:"creditcard")),
-                                                           Card(rank: "2",
-                                                               symbol: "clubs",
-                                                               image: Image(systemName:"creditcard")),
-                                                           Card(rank: "4",
-                                                               symbol: "hearts",
-                                                               image: Image(systemName:"creditcard")),
-                                                           Card(rank: "6",
-                                                               symbol: "hearts",
-                                                               image: Image(systemName:"creditcard")),
-                                                           Card(rank: "K",
-                                                               symbol: "hearts",
-                                                               image: Image(systemName:"creditcard"))]),
-                                    score: "0",
-                                    icon: Image(systemName: "faceid"),
-                                    fishIcon: true)
-    @State var player2 = PlayerView(name: "Opponent1",
-                                    hand: HandView(cards: [Card(rank: "2",
-                                                                symbol: "hearts",
-                                                                image: Image(systemName:"creditcard")),
-                                                           Card(rank: "2",
-                                                               symbol: "clubs",
-                                                               image: Image(systemName:"creditcard")),
-                                                           Card(rank: "4",
-                                                               symbol: "hearts",
-                                                               image: Image(systemName:"creditcard")),
-                                                           Card(rank: "6",
-                                                               symbol: "hearts",
-                                                               image: Image(systemName:"creditcard")),
-                                                           Card(rank: "K",
-                                                               symbol: "hearts",
-                                                               image: Image(systemName:"creditcard"))]),
-                                    score: "0",
-                                    icon: Image(systemName: "faceid"),
-                                    fishIcon: true)
-    @State var player3 = PlayerView(name: "Opponent2",
-                                    hand: HandView(cards: [Card(rank: "2",
-                                                                symbol: "hearts",
-                                                                image: Image(systemName:"creditcard")),
-                                                           Card(rank: "2",
-                                                               symbol: "clubs",
-                                                               image: Image(systemName:"creditcard")),
-                                                           Card(rank: "4",
-                                                               symbol: "hearts",
-                                                               image: Image(systemName:"creditcard")),
-                                                           Card(rank: "6",
-                                                               symbol: "hearts",
-                                                               image: Image(systemName:"creditcard")),
-                                                           Card(rank: "K",
-                                                               symbol: "hearts",
-                                                               image: Image(systemName:"creditcard"))]),
-                                    score: "0",
-                                    icon: Image(systemName: "faceid"),
-                                    fishIcon: true)
-    @State var player4 = PlayerView(name: "Opponent3",
-                                    hand: HandView(cards: [Card(rank: "2",
-                                                                symbol: "hearts",
-                                                                image: Image(systemName:"creditcard")),
-                                                           Card(rank: "2",
-                                                               symbol: "clubs",
-                                                               image: Image(systemName:"creditcard")),
-                                                           Card(rank: "4",
-                                                               symbol: "hearts",
-                                                               image: Image(systemName:"creditcard")),
-                                                           Card(rank: "6",
-                                                               symbol: "hearts",
-                                                               image: Image(systemName:"creditcard")),
-                                                           Card(rank: "K",
-                                                               symbol: "hearts",
-                                                               image: Image(systemName:"creditcard"))]),
-                                    score: "0",
-                                    icon: Image(systemName: "faceid"),
-                                    fishIcon: true)
-    
-    
+    var body: some View {
+        Button(action: dealCards) {
+            Text("Deal Cards")
+        }
+    }
+    func dealCards() {
+        for _ in 0..<7 {
+            if let card = deck.drawCard() {
+                playerturn.addCard(card)
+            }
+        }
+    }
+}
+
+//NEED GAMEOBJECT TO HOLD GAME VARIABLES
+
+
+// Game View
+struct GameView: View {
+    @StateObject private var deck = Deck()
+    @StateObject private var player1 = Player(name: "User")
+    @StateObject private var opponent1 = Player(name: "Opponent1")
+    @StateObject private var opponent2 = Player(name: "Opponent2")
+    @StateObject private var opponent3 = Player(name: "Opponent3")
     
     var body: some View {
         ZStack {
-            // Card Pile
+            DrawpileView(playerturn: player1, deck: deck)
+            
             VStack {
-                Spacer()
-                HStack {
-                    Spacer()
-                    Text("Card Pile")
-                        .padding()
-                        .frame(alignment: .center).border(Color.red)
-                    Spacer()
-                }
-                Spacer()
-            }
-            .background(Color.green)
-            .frame(alignment: .center).border(Color.green)
-            VStack {
+                // top layer
                 // Opponent 1
-                player2
-                    .frame(maxWidth: /*@START_MENU_TOKEN@*/250.0/*@END_MENU_TOKEN@*/)
-                    .rotationEffect(.degrees(180))
+                PlayerView(player: opponent1)
+                    .frame(width: 350)
                 
                 Spacer()
                 
-                HStack {
+                // mid layer
+                HStack(alignment:.center, spacing: 0) {
                     // Opponent 2
-                    player3
-                        .frame(maxHeight: /*@START_MENU_TOKEN@*/250.0/*@END_MENU_TOKEN@*/)
-                        .rotationEffect(.degrees(90))
-                    Spacer()
+                    ZStack {
+                        PlayerView(player: opponent2)
+                            .rotationEffect(.degrees(90))
+                            .frame(width: 350)
+                            .offset(x: 44)
+                    }
+                    
+                    
+                    Button(action: dealCards) {
+                        Text("Deal Cards")
+                    }
+                    
                     // Opponent 3
-                    player4
-                        .frame(maxHeight: 250.0)
-                        .rotationEffect(.degrees(-90))
+                    ZStack {
+                        PlayerView(player: opponent3)
+                            .rotationEffect(.degrees(-90))
+                            .frame(width: 350)
+                            .offset(x: -44)
+                    }
                 }
                 
                 Spacer()
+                
+                // bot layer
                 // Player
-                player1
-                    .frame(maxWidth: 250.0)
+                PlayerView(player: player1)
+                    .frame(width: 350)
+                    .offset(y: 1)
+                
             }
         }
-        .padding()
+        
+    }
+    func dealCards() {
+        for _ in 0..<7 {
+            if let card = deck.drawCard() {
+                player1.addCard(card)
+            }
+            if let card = deck.drawCard() {
+                opponent1.addCard(card)
+            }
+        }
+    }
+}
+
+struct GameView_Previews: PreviewProvider {
+    static var previews: some View {
+        GameView()
+    }
+}
+
+struct ContentView: View {
+    // Variables
+    
+    // Body
+    var body: some View{
+        VStack {
+            GameView()
+        }
     }
 }
 
