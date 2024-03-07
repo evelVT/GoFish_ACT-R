@@ -73,6 +73,39 @@ class Player: ObservableObject {
 }
 
 
+
+
+// Card View
+struct CardView: View {
+    let card: Card
+    @State private var isHovered = false
+    var cardScale = CGFloat(3.5)
+    
+    
+    var body: some View {
+        ZStack {
+            Rectangle()
+                .fill(Color.white)
+                .frame(width:12*cardScale, height:18*cardScale)
+                .cornerRadius(1)
+                .shadow(color: .black, radius:4, x:-5, y:5)
+            Image(systemName:"creditcard")
+                .foregroundColor(Color.red)
+                .rotationEffect(.degrees(90))
+                .scaleEffect(cardScale)
+            Text("\(card.rank)")
+                .padding(.trailing, 5.5*cardScale)
+                .padding(.top, 5)
+        }
+        .scaleEffect(isHovered ? 1.2 : 1)
+        .onTapGesture {
+            isHovered.toggle()
+            print("Mouse click")
+        }
+    }
+}
+
+
 // Player View
 struct PlayerView: View {
     // Variables
@@ -88,21 +121,8 @@ struct PlayerView: View {
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing:-5) {
                         ForEach(Array(player.hand.enumerated()), id: \.offset) { index, card in
-                            ZStack {
-                                Rectangle()
-                                    .fill(Color.white)
-                                    .frame(width:12*cardScale, height:18*cardScale)
-                                    .cornerRadius(1)
-                                    .shadow(color: .black, radius:4, x:-5, y:5)
-                                Image(systemName:"creditcard")
-                                    .foregroundColor(Color.red)
-                                    .rotationEffect(.degrees(90))
-                                    .scaleEffect(cardScale)
-                                Text("\(card.rank)")
-                                    .padding(.trailing, 5.5*cardScale)
-                                    .padding(.top, 5)
-                            }
-                            .offset(y: cardOffsetY(for: index))
+                            CardView(card: card)
+                                .offset(y: cardOffsetY(for: index))
                         }
                     }
                 }
@@ -152,10 +172,16 @@ struct PlayerView: View {
 struct DrawpileView: View {
     @StateObject var playerturn: Player
     @StateObject var deck: Deck
+    @State private var hoverEl: Bool = false
 
     var body: some View {
         Button(action: dealCards) {
             Text("Deal Cards")
+                .foregroundStyle(hoverEl ? .green : .red)
+                .onHover { hover in
+                    print("Mouse hover: \(hover)")
+                    hoverEl = hover
+                }
         }
     }
     func dealCards() {
