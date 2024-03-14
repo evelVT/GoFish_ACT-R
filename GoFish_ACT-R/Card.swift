@@ -1,4 +1,4 @@
-//Card struct
+//Card struct.
 
 
 //Equatable: A type that can be compared for value equality.

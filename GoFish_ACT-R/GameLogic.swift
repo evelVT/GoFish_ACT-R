@@ -1,4 +1,4 @@
-
+// Game Logic class
 
 class Game {
     var deck = Deck()

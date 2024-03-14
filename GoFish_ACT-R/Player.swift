@@ -1,3 +1,5 @@
+//Player class
+
 class Player {
     let id: Int
     private(set) var hand: [Card] = []
