@@ -12,6 +12,7 @@ struct Deck {
     }
 
     //deals a card (if there is a card)
+    //random comment for commit
     mutating func dealCard() -> Card? {
         guard !cards.isEmpty else { return nil }
         return cards.removeFirst()
