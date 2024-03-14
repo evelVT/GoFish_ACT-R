@@ -80,6 +80,7 @@ struct CardView: View {
     let card: Card
     @State private var isHovered = false
     var cardScale = CGFloat(3.5)
+    @State private var offset = CGSize.zero
     
     
     var body: some View {
@@ -97,11 +98,29 @@ struct CardView: View {
                 .padding(.trailing, 5.5*cardScale)
                 .padding(.top, 5)
         }
+        .scrollClipDisabled()
+        .offset(y: offset.height)
+        .offset(x: offset.width)
         .scaleEffect(isHovered ? 1.2 : 1)
         .onTapGesture {
             isHovered.toggle()
             print("Mouse click")
         }
+        .gesture(
+            DragGesture()
+            .onChanged { gesture in
+                offset = gesture.translation
+                print("offset: \(offset.height)")
+            }
+            .onEnded{ _ in
+                if abs(offset.width) > 100 {
+                    //add the card to drawpile
+                    offset = .zero //temp
+                } else {
+                    offset = .zero
+                }
+            }
+        )
     }
 }
 
@@ -123,6 +142,7 @@ struct PlayerView: View {
                         ForEach(Array(player.hand.enumerated()), id: \.offset) { index, card in
                             CardView(card: card)
                                 .offset(y: cardOffsetY(for: index))
+                                .zIndex(1)
                         }
                     }
                 }
@@ -152,7 +172,6 @@ struct PlayerView: View {
             .background(Color.blue)
         }
         .background(Color.white)
-        .cornerRadius(10)
     }
     private func cardOffsetX(for index: Int) -> CGFloat {
         let offset = -cardWidth * index
