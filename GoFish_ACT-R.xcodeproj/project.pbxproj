@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		E815A0232B9AA33900C5FF06 /* Player.swift in Sources */ = {isa = PBXBuildFile; fileRef = E815A01F2B9AA33800C5FF06 /* Player.swift */; };
+		E815A0242B9AA33900C5FF06 /* Card.swift in Sources */ = {isa = PBXBuildFile; fileRef = E815A0202B9AA33800C5FF06 /* Card.swift */; };
+		E815A0252B9AA33900C5FF06 /* Deck.swift in Sources */ = {isa = PBXBuildFile; fileRef = E815A0212B9AA33800C5FF06 /* Deck.swift */; };
+		E815A0262B9AA33900C5FF06 /* GameLogic.swift in Sources */ = {isa = PBXBuildFile; fileRef = E815A0222B9AA33800C5FF06 /* GameLogic.swift */; };
 		E8A480812B90C4850037C2BA /* GoFish_ACT_RApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8A480802B90C4850037C2BA /* GoFish_ACT_RApp.swift */; };
 		E8A480832B90C4850037C2BA /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8A480822B90C4850037C2BA /* ContentView.swift */; };
 		E8A480852B90C4870037C2BA /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E8A480842B90C4870037C2BA /* Assets.xcassets */; };
@@ -14,6 +18,10 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		E815A01F2B9AA33800C5FF06 /* Player.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Player.swift; sourceTree = "<group>"; };
+		E815A0202B9AA33800C5FF06 /* Card.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Card.swift; sourceTree = "<group>"; };
+		E815A0212B9AA33800C5FF06 /* Deck.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Deck.swift; sourceTree = "<group>"; };
+		E815A0222B9AA33800C5FF06 /* GameLogic.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameLogic.swift; sourceTree = "<group>"; };
 		E8A4807D2B90C4850037C2BA /* GoFish_ACT-R.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "GoFish_ACT-R.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		E8A480802B90C4850037C2BA /* GoFish_ACT_RApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoFish_ACT_RApp.swift; sourceTree = "<group>"; };
 		E8A480822B90C4850037C2BA /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -51,6 +59,10 @@
 		E8A4807F2B90C4850037C2BA /* GoFish_ACT-R */ = {
 			isa = PBXGroup;
 			children = (
+				E815A0202B9AA33800C5FF06 /* Card.swift */,
+				E815A0212B9AA33800C5FF06 /* Deck.swift */,
+				E815A0222B9AA33800C5FF06 /* GameLogic.swift */,
+				E815A01F2B9AA33800C5FF06 /* Player.swift */,
 				E8A480802B90C4850037C2BA /* GoFish_ACT_RApp.swift */,
 				E8A480822B90C4850037C2BA /* ContentView.swift */,
 				E8A480842B90C4870037C2BA /* Assets.xcassets */,
@@ -137,8 +149,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E815A0262B9AA33900C5FF06 /* GameLogic.swift in Sources */,
 				E8A480832B90C4850037C2BA /* ContentView.swift in Sources */,
+				E815A0232B9AA33900C5FF06 /* Player.swift in Sources */,
+				E815A0252B9AA33900C5FF06 /* Deck.swift in Sources */,
 				E8A480812B90C4850037C2BA /* GoFish_ACT_RApp.swift in Sources */,
+				E815A0242B9AA33900C5FF06 /* Card.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

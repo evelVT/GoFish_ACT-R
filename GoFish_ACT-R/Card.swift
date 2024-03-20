@@ -1,5 +1,5 @@
+import SwiftUI
 //Card struct.
-
 
 //Equatable: A type that can be compared for value equality.
 struct Card: Equatable {

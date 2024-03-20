@@ -1,20 +1,27 @@
+import SwiftUI
 //Player class
 
-class Player {
+class Player: ObservableObject {
     let id: Int
+    @Published var name: String
+    @Published var score = 0
     private(set) var hand: [Card] = []
 
-    init(name: String) {
+    init(id: Int, name: String) {
+        self.id = id
         self.name = name
     }
 
     func receiveCard(card: Card) {
+        print("\(name) receives card!")
         hand.append(card)
+        objectWillChange.send()
+        print("\(name) now has \(hand.count) cards!")
     }
 
     // Function that will be called when the player is asked for a specific rank
     // Returns all cards of the specified rank and removes them from the player's hand
-    func giveAllCards(ofRank: card.rank) -> [Card] {
+    func giveAllCards(ofRank rank: Card.Rank) -> [Card] {
         let matchingCards = hand.filter { $0.rank == rank }
         hand = hand.filter { $0.rank != rank }
         return matchingCards
@@ -28,7 +35,8 @@ class Player {
 
     // Choose a rank to ask for from another player
     func chooseCardToAskFor() -> Card.Rank? {
-       pass
+        // TODO: Implement logic to send the cards to the player who asked for them
+       return nil
     }
 
     // Respond to another player's request for a specific rank
@@ -38,6 +46,7 @@ class Player {
         if hasCard {
             let cardsGiven = giveAllCards(ofRank: card.rank)
             // Call some function to send the cards to the player who asked for them. Maybe somehow notify the game
+            // TODO: Implement logic to send the cards to the player who asked for them
         }
         return hasCard
     }

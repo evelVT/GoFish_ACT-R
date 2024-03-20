@@ -1,14 +1,15 @@
+import SwiftUI
 // Game Logic class
 
-class Game {
+class Game: ObservableObject {
     var deck = Deck()
-    //var players: [Player] = []
+    var players: [Player] = []
     var currentPlayerIndex = 0
 
     init(playerIds: [Int]) {
         // Initialize players
         for id in playerIds {
-            let player = Player(id: id)
+            let player = Player(id: id, name: "Player \(id)")
             players.append(player)
         }
         deck.initializeDeck()
@@ -20,33 +21,56 @@ class Game {
         // Assuming 5 cards per player for the initial deal
         let initialCardsCount = 5
 
-        for i in 0..<initialCardsCount {
+        for _ in 0..<initialCardsCount {
             for player in players {
                 if let card = deck.dealCard() {
                     player.receiveCard(card: card)
+                    objectWillChange.send()
                 }
             }
         }
     }
+    
+    func dealCard() {
+        let currentplayer = players[currentPlayerIndex]
+        if let card = deck.dealCard() {
+            print("dealcard() running!")
+            currentplayer.receiveCard(card: card)
+            objectWillChange.send()
+        }
+    }
+    
+    func nextPlayer() {
+        currentPlayerIndex = (currentPlayerIndex + 1) % players.count
+    }
 
-    func playTurn(player: Player) {
+    func playTurn() {
         // what card does the player ask for and whom?
-        //call function that handles the request handleRequest
+        
+        // TODO: Implement logic for the current player's turn
+        // - Choose a player to ask for a card
+        // - Handle the card request (use handleRequest)
+        let currentPlayer = players[currentPlayerIndex]
+        
         checkGameEndConditions()
+        nextPlayer()
     }
 
     private func choosePlayerToAsk(targetedBy askingPlayer: Player) -> Player? {
         return players.first(where: { $0 !== askingPlayer })
     }
 
-    private func handleRequest(from targetPlayer: Player, to askingPlayer: Player, with card: Card) {
-    //if targetPlayer has the card, give it to askingPlayer
-    //else, askingPlayer draws a card from the deck
-    //maybe return a bool and then have other functions for handling the rest
+    private func handleRequest(from targetPlayer: Player, to askingPlayer: Player, with card: Card) -> Bool {
+        
+        // TODO: Implement logic to handle the card request
+        // - If targetPlayer has the card, give it to askingPlayer and return true
+        // - Else, askingPlayer draws a card from the deck and return false
+        return false
     }
 
     private func checkGameEndConditions() {
-        //should end when all players have no cards left
+        // TODO: Implement logic to check if all players have no cards left
+        // - If the game has ended, determine the winner or handle the end of the game
     }
 }
 

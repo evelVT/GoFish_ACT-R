@@ -1,7 +1,7 @@
-
+import SwiftUI
 
 struct Deck {
-    private var cards: [Card] = []
+    var cards: [Card] = []
 
     init() {
         self.initializeDeck()
@@ -18,8 +18,8 @@ struct Deck {
         return cards.removeFirst()
     }
 
-    private mutating func initializeDeck() {
-        cards = []
+    mutating func initializeDeck() {
+        cards = [] // only keep this if we want it to reset the deck
         for suit in Card.Suit.allCases {
             for rank in Card.Rank.allCases {
                 cards.append(Card(suit: suit, rank: rank))
