@@ -5,6 +5,7 @@ class Game: ObservableObject {
     var deck = Deck()
     var players: [Player] = []
     var currentPlayerIndex = 0
+    var running = false
 
     init(playerIds: [Int]) {
         // Initialize players
@@ -12,9 +13,17 @@ class Game: ObservableObject {
             let player = Player(id: id, name: "Player \(id)")
             players.append(player)
         }
+    }
+    
+    func startNew() {
+        for player in players {
+            player.emptyHand()
+        }
+        running.toggle()
         deck.initializeDeck()
         deck.shuffle()
         dealInitialCards()
+        currentPlayerIndex = Int.random(in: 0..<players.count)
     }
 
     func dealInitialCards() {
@@ -23,7 +32,11 @@ class Game: ObservableObject {
 
         for _ in 0..<initialCardsCount {
             for player in players {
-                if let card = deck.dealCard() {
+                if var card = deck.dealCard() {
+                    if player.id == 1 {
+                        card.toggleOpen()
+                        card.toggleDrag()
+                    }
                     player.receiveCard(card: card)
                     objectWillChange.send()
                 }
@@ -33,8 +46,11 @@ class Game: ObservableObject {
     
     func dealCard() {
         let currentplayer = players[currentPlayerIndex]
-        if let card = deck.dealCard() {
+        if var card = deck.dealCard() {
             print("dealcard() running!")
+            if currentPlayerIndex == 0 {
+                card.toggleOpen()
+            }
             currentplayer.receiveCard(card: card)
             objectWillChange.send()
         }
@@ -42,6 +58,7 @@ class Game: ObservableObject {
     
     func nextPlayer() {
         currentPlayerIndex = (currentPlayerIndex + 1) % players.count
+        objectWillChange.send()
     }
 
     func playTurn() {

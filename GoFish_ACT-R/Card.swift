@@ -16,4 +16,13 @@ struct Card: Equatable {
     }
     let suit: Suit
     let rank: Rank
+    var open: Bool
+    var drag: Bool
+    
+    mutating func toggleOpen() {
+        open.toggle()
+    }
+    mutating func toggleDrag() {
+        drag.toggle()
+    }
 }

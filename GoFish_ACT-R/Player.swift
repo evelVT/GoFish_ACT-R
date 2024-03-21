@@ -1,7 +1,7 @@
 import SwiftUI
 //Player class
 
-class Player: ObservableObject {
+class Player: ObservableObject, Identifiable {
     let id: Int
     @Published var name: String
     @Published var score = 0
@@ -10,6 +10,9 @@ class Player: ObservableObject {
     init(id: Int, name: String) {
         self.id = id
         self.name = name
+    }
+    func emptyHand() {
+        hand.removeAll()
     }
 
     func receiveCard(card: Card) {
