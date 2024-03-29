@@ -2,6 +2,16 @@ import SwiftUI
 //Player class
 
 class Player: ObservableObject, Identifiable {
+class Player: ObservableObject {
+// Model has to be a struct
+// ACT-R is a class ?
+// update function that pulls stuff from the ACT-R/Player class --> updates the struct
+// Model struct that takes things from class ()
+// Experienced model player ? -- last details though
+// In terms of parameter tuning -- rt and noise, don't neccesarily change the others
+// decay = 0.00000000001 to test models maybe
+
+class Player {
     let id: Int
     @Published var name: String
     @Published var score = 0
@@ -20,6 +30,7 @@ class Player: ObservableObject, Identifiable {
         hand.append(card)
         objectWillChange.send()
         print("\(name) now has \(hand.count) cards!")
+        checkForBooks()
     }
 
     // Function that will be called when the player is asked for a specific rank
@@ -43,15 +54,16 @@ class Player: ObservableObject, Identifiable {
     }
 
     // Respond to another player's request for a specific rank
-    // Returns true if the card(s) were found and given, false otherwise
-    func respondToCardRequest(card: Card) -> Bool {
+    // Changed this to actually return the cards.
+    func respondToCardRequest(card: Card) -> [Card] {
         let hasCard = hasCard(ofRank: card.rank)
         if hasCard {
             let cardsGiven = giveAllCards(ofRank: card.rank)
             // Call some function to send the cards to the player who asked for them. Maybe somehow notify the game
             // TODO: Implement logic to send the cards to the player who asked for them
+            return cardsGiven
         }
-        return hasCard
+        return []
     }
 
     // Method to check for books and remove them from the player's hand

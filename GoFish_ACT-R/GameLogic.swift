@@ -43,7 +43,7 @@ class Game: ObservableObject {
             }
         }
     }
-    
+
     func dealCard() {
         let currentplayer = players[currentPlayerIndex]
         if var card = deck.dealCard() {
@@ -55,7 +55,7 @@ class Game: ObservableObject {
             objectWillChange.send()
         }
     }
-    
+
     func nextPlayer() {
         currentPlayerIndex = (currentPlayerIndex + 1) % players.count
         objectWillChange.send()
@@ -63,12 +63,12 @@ class Game: ObservableObject {
 
     func playTurn() {
         // what card does the player ask for and whom?
-        
+
         // TODO: Implement logic for the current player's turn
         // - Choose a player to ask for a card
         // - Handle the card request (use handleRequest)
         let currentPlayer = players[currentPlayerIndex]
-        
+
         checkGameEndConditions()
         nextPlayer()
     }
@@ -77,12 +77,24 @@ class Game: ObservableObject {
         return players.first(where: { $0 !== askingPlayer })
     }
 
+
     private func handleRequest(from targetPlayer: Player, to askingPlayer: Player, with card: Card) -> Bool {
-        
-        // TODO: Implement logic to handle the card request
-        // - If targetPlayer has the card, give it to askingPlayer and return true
-        // - Else, askingPlayer draws a card from the deck and return false
-        return false
+    //if targetPlayer has the card, give it to askingPlayer
+    //else, askingPlayer draws a card from the deck
+    //maybe return a bool and then have other functions for handling the rest
+        if targetPlayer.hasCard(ofRank: card.rank){
+            let wonCards = targetPlayer.respondToCardRequest(card: card)
+            for card in wonCards{
+                askingPlayer.receiveCard(card: card)
+            }
+            return true
+
+        }
+        else{
+            let card = deck.dealCard()
+            askingPlayer.receiveCard(card:card)
+            return false
+        }
     }
 
     private func checkGameEndConditions() {
