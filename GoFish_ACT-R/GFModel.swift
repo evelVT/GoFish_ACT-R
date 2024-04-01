@@ -24,7 +24,7 @@ enum Rank: Int, CaseIterable, CustomStringConvertible {
     }
 }
 
-struct RPSModel {
+struct GFModel {
     let model = Model()
     var hasRank: [Rank]
     var doesNotHaveRank: [Rank]
@@ -37,7 +37,7 @@ struct RPSModel {
     }
 
     //function that checks what rank player of ID playerID asked for 
-    mutating func playerAskedRank(_ action: Action, _ playerID: Int, _ rank: Rank, _ playerAskedID: Int) {
+    mutating func playerAskedRank(_ playerID: Int,  _ playerAskedID: Int, _ rank: Rank) {
         self.hasRank[0] = rank
         model.modifyLastAction(slot: "playerAsking", value: playerID)
         model.modifyLastAction(slot: "rank", value: rank.description)
