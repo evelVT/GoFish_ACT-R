@@ -2,7 +2,6 @@ import SwiftUI
 //Player class
 
 class Player: ObservableObject, Identifiable {
-class Player: ObservableObject {
 // Model has to be a struct
 // ACT-R is a class ?
 // update function that pulls stuff from the ACT-R/Player class --> updates the struct
@@ -10,8 +9,6 @@ class Player: ObservableObject {
 // Experienced model player ? -- last details though
 // In terms of parameter tuning -- rt and noise, don't neccesarily change the others
 // decay = 0.00000000001 to test models maybe
-
-class Player {
     let id: Int
     @Published var name: String
     @Published var score = 0
