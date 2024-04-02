@@ -1,4 +1,6 @@
 import SwiftUI
+import Foundation
+
 // Game Logic class
 
 class Game: ObservableObject {

@@ -1,4 +1,6 @@
 import Combine
+import Foundation
+
 
 class ViewModel: ObservableObject {
     @Published private var players: [GFModel] = Array(repeating: GFModel(), count: 3)

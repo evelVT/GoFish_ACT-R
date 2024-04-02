@@ -1,3 +1,6 @@
+import Foundation
+
+
 
 enum Rank: Int, CaseIterable, CustomStringConvertible {
     case none = 0 // Represents the initial state where the rank is unknown
