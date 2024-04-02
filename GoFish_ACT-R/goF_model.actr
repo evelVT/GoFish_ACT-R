@@ -80,7 +80,7 @@
     isa ask
     playerAsking  = player1
     rank  = askedR   
-    playerAsked = model
+    playerAsked = model ; I think we could remove this. Don't see the relevance
 ==>
    +goal>
      state check-rank

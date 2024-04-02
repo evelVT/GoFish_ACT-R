@@ -3,14 +3,17 @@ import SwiftUI
 
 class Game: ObservableObject {
     var deck = Deck()
-    var players: [Player] = []
-    var currentPlayerIndex = 0
+    var players: [GFModel] = []
+    var currentPlayerIndex = 1 //we start at 1 ig
     var running = false
 
     init(playerIds: [Int]) {
-        // Initialize players
+        // Initialize players. I was thinking that player 1 could just be the player and 2-3 the models
+        if id == 1{
+            continue
+        }
         for id in playerIds {
-            let player = Player(id: id, name: "Player \(id)")
+            let player = GFModel(id: id, name: "Player \(id)")
             players.append(player)
         }
     }

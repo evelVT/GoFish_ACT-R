@@ -1,15 +1,20 @@
+import Combine
+
 class ViewModel: ObservableObject {
-    @Published private var model = GFModel()
+    @Published private var players: [GFModel] = Array(repeating: GFModel(), count: 3)
 
 
     func playerasked(_ playerAskingID: Int, _ playerAskedID: Int, _ rank: Rank ){
-        // idk how exactly it has to be modified. This function should be called somewhere
-        // in the View I believe and then I can call model.askedRank. 
-        // Also, we can maybe have this for anyone asking anyone and then see where we send information and how
-        // since for most requests a model will have to answer the request
-        // while the other models / player just 'listen'
-        model.playerAskedRank(playerAskingID, playerAskedID, rank)
-        //this should only be called for certain models not all depending on who's asked
+        //Managed to modify this to be called for all models whether they have to listen / answer
+        // Evelien maybe you know better how this could fit in the View :) 
+        for i in 0..<3 {
+            if playerAskedID == i {
+                players[playerAskedID].playerAskedModel(playerAskingID, rank)
+            }
+            else{
+                players[i].playerAskedRank(playerAskingID, playerAskedID, rank)
+            }
+        }
     }
 
 }
