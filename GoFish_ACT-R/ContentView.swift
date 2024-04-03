@@ -10,13 +10,14 @@ import SwiftUI
 
 // Card View
 struct CardView: View {
-    @ObservedObject var game: Game
+    //@ObservedObject var game: Game
+    @ObservedObject var viewmodel: ViewModel
     let card: Card
     @State private var isHovered = false
     var cardScale = CGFloat(3.5)
     @State private var offset = CGSize.zero
-    
-    
+
+
     var body: some View {
         ZStack {
             Rectangle()
@@ -24,7 +25,7 @@ struct CardView: View {
                 .frame(width: 12 * cardScale, height: 18 * cardScale)
                 .cornerRadius(1.0)
                 .shadow(color: .black.opacity(0.5), radius: 5, x: -5, y: 5)
-            
+
             VStack {
                 HStack {
                     Text(card.open ? card.rank.rawValue.description : "")
@@ -46,7 +47,7 @@ struct CardView: View {
             isHovered.toggle()
             print("Mouse Click!")
             if (card.open) {
-                game.addAskAction(card: card)
+                viewmodel.addAskAction(card: card)
             }
         }
         .gesture(
@@ -71,13 +72,14 @@ struct CardView: View {
 
 // Opponent View
 struct OpponentView: View {
-    @ObservedObject var game: Game
-    @ObservedObject var player: Player
-    
+    //@ObservedObject var game: Game
+    @ObservedObject var viewmodel: ViewModel
+    @ObservedObject var player: Any
+
     var body: some View {
         ZStack {
             RoundedRectangle(cornerRadius: 15)
-                .strokeBorder(Color.red.opacity(game.currentPlayerIndex+1 == player.id ? 1.0 : 0.0), lineWidth: 3)
+                .strokeBorder(Color.red.opacity(viewmodel.game.currentPlayerIndex+1 == player.id ? 1.0 : 0.0), lineWidth: 3)
                 .background(Color(red: 0.349, green: 0.416, blue: 1))
                 .clipShape(RoundedRectangle(cornerRadius: 15))
                 .frame(maxHeight:300)
@@ -96,7 +98,7 @@ struct OpponentView: View {
                 HStack(spacing:1) {
                     if !player.hand.isEmpty {
                         ZStack {
-                            CardView(game:game, card: Card.init(suit: .hearts, rank: .ace, open: false, drag: false))
+                            CardView(viewmodel:viewmodel, card: Card.init(suit: .hearts, rank: .ace, open: false, drag: false))
                             Text("\(player.hand.count)")
                                 .padding(.horizontal)
                         }
@@ -107,7 +109,7 @@ struct OpponentView: View {
             }
             .foregroundStyle(.black)
         }
-        
+
     }
 }
 
@@ -115,16 +117,17 @@ struct OpponentView: View {
 // Player View
 struct PlayerView: View {
     // Variables
-    @ObservedObject var game: Game
-    @ObservedObject var player: Player
+    //@ObservedObject var game: Game
+    @ObservedObject var viewmodel: ViewModel
+    @ObservedObject var player: Any
     var cardScale = CGFloat(3.5)
     var cardWidth = 25
-    
+
     // Body
     var body: some View {
         ZStack(alignment:.bottom) {
             RoundedRectangle(cornerRadius: 15)
-                .strokeBorder(Color.red.opacity(game.currentPlayerIndex+1 == player.id ? 1.0 : 0.0), lineWidth: 3)
+                .strokeBorder(Color.red.opacity(viewmodel.game.currentPlayerIndex+1 == player.id ? 1.0 : 0.0), lineWidth: 3)
                 .background(Color(red: 0.349, green: 0.416, blue: 1))
                 .clipShape(RoundedRectangle(cornerRadius: 15))
                 .frame(maxHeight:200)
@@ -133,16 +136,16 @@ struct PlayerView: View {
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(alignment:.top) {
                         ForEach(player.hand.indices, id: \.self) { index in
-                            CardView(game:game, card: player.hand[index])
+                            CardView(viewmodel:viewmodel, card: player.hand[index])
                                 .offset(y: cardOffsetY(for: index))
                                 .zIndex(1)
                         }
                     }
                 }
                 .scrollClipDisabled()
-                
+
                 Spacer()
-                
+
                 HStack {
                     Spacer()
                     HStack(spacing:1) {
@@ -180,7 +183,8 @@ struct PlayerView: View {
 
 // PileView
 struct DrawpileView: View {
-    @ObservedObject var game: Game
+    //@ObservedObject var game: Game
+    @ObservedObject var viewodel: ViewModel
     @State private var hoverEl1: Bool = false
     @State private var hoverEl2: Bool = false
     @State private var isDropTargeted = false
@@ -196,15 +200,15 @@ struct DrawpileView: View {
                         .background(Color.red.opacity(hoverEl1 ? 0.5 : 1))
                         .clipShape(RoundedRectangle(cornerRadius: 15))
                         .frame(maxHeight:200)
-                    
-                    Text(game.running ? (game.canFish ? "Go Fish!" : "Player \(game.currentPlayerIndex+1) \nplaying") : "New Game")
+
+                    Text(viewmodel.game.running ? (viewmodel.game.canFish ? "Go Fish!" : "Player \(viewmodel.game.currentPlayerIndex+1) \nplaying") : "New Game")
                         .foregroundStyle(.black)
                         .onHover { hover in
                             print("Mouse hover: \(hover)")
                             hoverEl1 = hover
                         }
                 }
-                
+
             }
             .padding()
             Button(action: nextPlayer) {
@@ -214,8 +218,8 @@ struct DrawpileView: View {
                         .background(Color.red.opacity(hoverEl1 ? 0.5 : 1))
                         .clipShape(RoundedRectangle(cornerRadius: 15))
                         .frame(maxHeight:200)
-                    
-                    Text(game.currentPlayerIndex == 0 ? "Ask Pile" : "X")
+
+                    Text(viewmodel.game.currentPlayerIndex == 0 ? "Ask Pile" : "X")
                         .foregroundStyle(.black)
                         .onHover { hover in
                             print("Mouse hover: \(hover)")
@@ -225,8 +229,8 @@ struct DrawpileView: View {
                         // hand
                         ScrollView(.horizontal, showsIndicators: false) {
                             HStack(alignment:.top) {
-                                ForEach(game.askPile.cards.indices, id: \.self) { index in
-                                    CardView(game:game, card: game.askPile.cards[index])
+                                ForEach(viewmodel.game.askPile.cards.indices, id: \.self) { index in
+                                    CardView(viewmodel:viewmodel, card: viewmodel.askPile.cards[index])
                                         .zIndex(1)
                                 }
                             }
@@ -239,11 +243,11 @@ struct DrawpileView: View {
         }
     }
     func pileAction() {
-        game.running ? (game.canFish ? game.goFish() : nil ) : game.startNew()
+        viewmodel.game.running ? (viewmodel.game.canFish ? viewmodel.game.goFish() : nil ) : viewmodel.game.startNew()
     }
     func nextPlayer() {
         print("next player!")
-        game.nextPlayer()
+        viewmodel.game.nextPlayer()
     }
 }
 
@@ -253,38 +257,39 @@ struct DrawpileView: View {
 // Game View
 struct GameView: View {
     @StateObject private var game: Game
-    
+    @StateObject private var viewmodel: ViewModel
+
     init() {
-        let playerIds = [1, 2, 3, 4] // assign unique IDs to each player
-        _game = StateObject(wrappedValue: Game(playerIds: playerIds))
+        //let playerIds = [1, 2, 3, 4] // assign unique IDs to each player
+        _viewmodel = StateObject(wrappedValue: ViewModel())
     }
-    
-    
+
+
     var body: some View {
         VStack {
             HStack {
-                ForEach(game.players.dropFirst().prefix(3)) { player in
+                ForEach(viewmodel.game.players.dropFirst().prefix(3)) { player in
                     Button(action: {processAsk(player: player)}) {
-                        OpponentView(game:game, player:player)
+                        OpponentView(viewmodel:viewmodel, player:player)
                     }
                 }
             }
             .padding(1.0)
             Spacer()
             HStack {
-                DrawpileView(game: game)
-                
+                DrawpileView(viewmodel: viewmodel)
+
             }
             .padding()
             Spacer()
             HStack {
-                PlayerView(game:game, player:game.players[0])
+                PlayerView(viewmodel:viewmodel, player:viewmodel.game.players[0])
             }
         }
-        
+
     }
-    func processAsk(player: Player) {
-        game.processAskAction(player: player)
+    func processAsk(player: Any) {
+        viewmodel.game.processAskAction(player: player)
     }
 }
 
