@@ -45,20 +45,25 @@ struct GFModel: Identifiable {
         model.run()
     }
 
-    func emptyHand() {
+    
+    mutating func emptyHand() {
         hand.removeAll()
     }
 
-    func receiveCard(card: Card) {
+    mutating func addCard(card: Card) {
         print("\(name) receives card!")
         hand.append(card)
+        sortHand()
         print("\(name) now has \(hand.count) cards!")
-        checkForBooks()
+    }
+    
+    mutating func removeCard(card: Card) {
+        hand.removeAll(where: {$0 == card})
     }
 
     // Function that will be called when the player is asked for a specific rank
     // Returns all cards of the specified rank and removes them from the player's hand
-    func giveAllCards(ofRank rank: Card.Rank) -> [Card] {
+    mutating func giveAllCards(ofRank rank: Card.Rank) -> [Card] {
         let matchingCards = hand.filter { $0.rank == rank }
         hand = hand.filter { $0.rank != rank }
         return matchingCards
@@ -75,24 +80,21 @@ struct GFModel: Identifiable {
         // TODO: Implement logic to send the cards to the player who asked for them
        return nil
     }
-
-    // Respond to another player's request for a specific rank
-    // Changed this to actually return the cards.
-    func respondToCardRequest(card: Card) -> [Card] {
-        let hasCard = hasCard(ofRank: card.rank)
-        if hasCard {
-            let cardsGiven = giveAllCards(ofRank: card.rank)
-            // Call some function to send the cards to the player who asked for them. Maybe somehow notify the game
-            // TODO: Implement logic to send the cards to the player who asked for them
-            return cardsGiven
+    
+    mutating func sortHand() {
+        hand = hand.sorted { (lhs, rhs) in
+            if lhs.rank == rhs.rank { // <1>
+                return lhs.suit.rawValue > rhs.suit.rawValue
+            }
+            
+            return lhs.rank.rawValue > rhs.rank.rawValue // <2>
         }
-        return []
     }
 
     // Method to check for books and remove them from the player's hand
     // Returns the number of books found and removed
     //not sure when this would be called. Each time the player receives a card? So in receiveCard?
-    func checkForBooks() -> Int {
+    mutating func checkForBooks() -> Int {
         var booksCount = 0
         let ranks = hand.map { $0.rank }
         let uniqueRanks = Set(ranks)
@@ -109,15 +111,17 @@ struct GFModel: Identifiable {
 
         return booksCount
     }
+    
+    
     //function that checks what rank player of ID playerID asked for
-    func playerAskedRank(_ playerID: Int,  _ playerAskedID: Int, _ rank: Rank) {
+    mutating func playerAskedRank(_ playerID: Int,  _ playerAskedID: Int, _ rank: Rank) {
         self.hasRank[playerID] = rank
         model.modifyLastAction(slot: "playerAsking", value: playerID.description)
         model.modifyLastAction(slot: "rank", value: rank.description)
         model.modifyLastAction(slot: "playerAsked", value: playerAskedID.description)
     }
 
-    func playerAskedModel(_ playerID: Int, _ rank: Rank){
+    mutating func playerAskedModel(_ playerID: Int, _ rank: Rank){
         self.hasRank[playerID] = rank
         model.modifyLastAction(slot: "playerAsking", value: playerID.description)
         model.modifyLastAction(slot: "rank", value: rank.description)

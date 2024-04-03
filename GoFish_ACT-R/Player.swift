@@ -46,18 +46,6 @@ class Player: ObservableObject, Identifiable {
         // TODO: Implement logic to send the cards to the player who asked for them
        return nil
     }
-
-    // Respond to another player's request for a specific rank
-    // Returns true if the card(s) were found and given, false otherwise
-    func respondToCardRequest(card: Card) -> Bool {
-        let hasCard = hasCard(ofRank: card.rank)
-        if hasCard {
-            let cardsGiven = giveAllCards(ofRank: card.rank)
-            // Call some function to send the cards to the player who asked for them. Maybe somehow notify the game
-            // TODO: Implement logic to send the cards to the player who asked for them
-        }
-        return hasCard
-    }
     
     func sortHand() {
         hand = hand.sorted { (lhs, rhs) in
