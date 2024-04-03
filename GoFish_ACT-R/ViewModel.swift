@@ -3,7 +3,7 @@ import Foundation
 
 
 class ViewModel: ObservableObject {
-    @Published private var players: [GFModel] = Array(repeating: GFModel(), count: 3)
+    @Published private var model = GFModel()
 
 
     func playerasked(_ playerAskingID: Int, _ playerAskedID: Int, _ rank: Rank ){
@@ -18,5 +18,4 @@ class ViewModel: ObservableObject {
             }
         }
     }
-
 }

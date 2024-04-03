@@ -27,8 +27,7 @@ enum Rank: Int, CaseIterable, CustomStringConvertible {
     }
 }
 
-struct GFModel: Identifiable {
-    let id: Int
+struct GFModel {
     let model = Model()
     var hasRank: [Rank]
     var doesNotHaveRank: [Rank]
@@ -37,7 +36,6 @@ struct GFModel: Identifiable {
     private(set) var hand: [Card] = []
 
     init(id: Int, name: String) {
-        self.id = id
         self.name = name
         self.hasRank = Array(repeating: .none, count: 3)
         self.doesNotHaveRank = Array(repeating: .none, count: 3)

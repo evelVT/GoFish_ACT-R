@@ -6,6 +6,7 @@ class Player: ObservableObject, Identifiable {
     @Published var name: String
     @Published var score = 0
     private(set) var hand: [Card] = []
+    let model = Model()
 
     init(id: Int, name: String) {
         self.id = id
@@ -21,6 +22,8 @@ class Player: ObservableObject, Identifiable {
         sortHand()
         objectWillChange.send()
         print("\(name) now has \(hand.count) cards!")
+        print("Check for books in \(name)'s hand!")
+        score += checkForBooks()
     }
     
     func removeCard(card: Card) {
@@ -76,5 +79,21 @@ class Player: ObservableObject, Identifiable {
         }
 
         return booksCount
+    }
+    
+    
+    //function that checks what rank player of ID playerID asked for
+    func playerAskedRank(_ playerID: Int,  _ playerAskedID: Int, _ rank: Rank) {
+        self.hasRank[playerID] = rank
+        model.modifyLastAction(slot: "playerAsking", value: playerID.description)
+        model.modifyLastAction(slot: "rank", value: rank.description)
+        model.modifyLastAction(slot: "playerAsked", value: playerAskedID.description)
+    }
+
+    func playerAskedModel(_ playerID: Int, _ rank: Rank){
+        self.hasRank[playerID] = rank
+        model.modifyLastAction(slot: "playerAsking", value: playerID.description)
+        model.modifyLastAction(slot: "rank", value: rank.description)
+
     }
 }
