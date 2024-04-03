@@ -39,8 +39,8 @@ struct GFModel {
     init() {
         self.hasRank = Array(repeating: .none, count: 3)
         self.doesNotHaveRank = Array(repeating: .none, count: 3)
-        model.loadModel(fileName: "goF_model")
-        model.run()
+        //model.loadModel(fileName: "goF_model")
+        //model.run()
 
 
     }
