@@ -10,6 +10,7 @@ import SwiftUI
 
 // Card View
 struct CardView: View {
+    @ObservedObject var game: Game
     let card: Card
     @State private var isHovered = false
     var cardScale = CGFloat(3.5)
@@ -44,6 +45,9 @@ struct CardView: View {
         .onTapGesture {
             isHovered.toggle()
             print("Mouse Click!")
+            if (card.open) {
+                game.addAskAction(card: card)
+            }
         }
         .gesture(
             DragGesture()
@@ -92,7 +96,7 @@ struct OpponentView: View {
                 HStack(spacing:1) {
                     if !player.hand.isEmpty {
                         ZStack {
-                            CardView(card: Card.init(suit: .hearts, rank: .ace, open: false, drag: false))
+                            CardView(game:game, card: Card.init(suit: .hearts, rank: .ace, open: false, drag: false))
                             Text("\(player.hand.count)")
                                 .padding(.horizontal)
                         }
@@ -101,6 +105,7 @@ struct OpponentView: View {
                     }
                 }
             }
+            .foregroundStyle(.black)
         }
         
     }
@@ -128,7 +133,7 @@ struct PlayerView: View {
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(alignment:.top) {
                         ForEach(player.hand.indices, id: \.self) { index in
-                            CardView(card: player.hand[index])
+                            CardView(game:game, card: player.hand[index])
                                 .offset(y: cardOffsetY(for: index))
                                 .zIndex(1)
                         }
@@ -178,34 +183,63 @@ struct DrawpileView: View {
     @ObservedObject var game: Game
     @State private var hoverEl1: Bool = false
     @State private var hoverEl2: Bool = false
+    @State private var isDropTargeted = false
+    @State private var droppedPayload: String = "No text dropped yet"
+    @State private var myPayload: String = "I belong in a blue box"
 
     var body: some View {
-        VStack {
+        HStack {
             Button(action: pileAction) {
-                Text(game.running ? "Draw Card" : "New Game")
-                    .foregroundStyle(hoverEl1 ? .green : .red)
-                    .onHover { hover in
-                        print("Mouse hover: \(hover)")
-                        hoverEl1 = hover
-                    }
+                ZStack {
+                    RoundedRectangle(cornerRadius: 15)
+                        .strokeBorder(Color.red)
+                        .background(Color.red.opacity(hoverEl1 ? 0.5 : 1))
+                        .clipShape(RoundedRectangle(cornerRadius: 15))
+                        .frame(maxHeight:200)
+                    
+                    Text(game.running ? (game.canFish ? "Go Fish!" : "Player \(game.currentPlayerIndex+1) \nplaying") : "New Game")
+                        .foregroundStyle(.black)
+                        .onHover { hover in
+                            print("Mouse hover: \(hover)")
+                            hoverEl1 = hover
+                        }
+                }
                 
             }
             .padding()
-            
             Button(action: nextPlayer) {
-                Text("Next Player")
-                    .foregroundStyle(hoverEl2 ? .green : .red)
-                    .onHover { hover in
-                        print("Mouse hover: \(hover)")
-                        hoverEl2 = hover
+                ZStack {
+                    RoundedRectangle(cornerRadius: 15)
+                        .strokeBorder(isDropTargeted ? Color.black : Color.red)
+                        .background(Color.red.opacity(hoverEl1 ? 0.5 : 1))
+                        .clipShape(RoundedRectangle(cornerRadius: 15))
+                        .frame(maxHeight:200)
+                    
+                    Text(game.currentPlayerIndex == 0 ? "Ask Pile" : "X")
+                        .foregroundStyle(.black)
+                        .onHover { hover in
+                            print("Mouse hover: \(hover)")
+                            hoverEl1 = hover
+                        }
+                    VStack {
+                        // hand
+                        ScrollView(.horizontal, showsIndicators: false) {
+                            HStack(alignment:.top) {
+                                ForEach(game.askPile.cards.indices, id: \.self) { index in
+                                    CardView(game:game, card: game.askPile.cards[index])
+                                        .zIndex(1)
+                                }
+                            }
+                        }
+                        .scrollClipDisabled()
                     }
+                }
+                .padding()
             }
-            .padding()
         }
-        
     }
     func pileAction() {
-        game.running ? game.dealCard() : game.startNew()
+        game.running ? (game.canFish ? game.goFish() : nil ) : game.startNew()
     }
     func nextPlayer() {
         print("next player!")
@@ -230,7 +264,9 @@ struct GameView: View {
         VStack {
             HStack {
                 ForEach(game.players.dropFirst().prefix(3)) { player in
-                    OpponentView(game:game, player:player)
+                    Button(action: {processAsk(player: player)}) {
+                        OpponentView(game:game, player:player)
+                    }
                 }
             }
             .padding(1.0)
@@ -247,8 +283,8 @@ struct GameView: View {
         }
         
     }
-    func startGame() {
-        game.playTurn()
+    func processAsk(player: Player) {
+        game.processAskAction(player: player)
     }
 }
 

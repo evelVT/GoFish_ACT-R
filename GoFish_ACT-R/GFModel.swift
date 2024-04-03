@@ -1,30 +1,59 @@
 import SwiftUI
-//Player class
 
-class Player: ObservableObject, Identifiable {
+
+
+enum Rank: Int, CaseIterable, CustomStringConvertible {
+    case none = 0 // Represents the initial state where the rank is unknown
+    case two = 2, three, four, five, six, seven, eight, nine, ten
+    case jack, queen, king, ace
+    
+    var description: String {
+        switch self {
+        case .none: return "none"
+        case .two: return "two"
+        case .three: return "three"
+        case .four: return "four"
+        case .five: return "five"
+        case .six: return "six"
+        case .seven: return "seven"
+        case .eight: return "eight"
+        case .nine: return "nine"
+        case .ten: return "ten"
+        case .jack: return "jack"
+        case .queen: return "queen"
+        case .king: return "king"
+        case .ace: return "ace"
+        }
+    }
+}
+
+struct GFModel: Identifiable {
     let id: Int
-    @Published var name: String
-    @Published var score = 0
+    let model = Model()
+    var hasRank: [Rank]
+    var doesNotHaveRank: [Rank]
+    var name: String
+    var score = 0
     private(set) var hand: [Card] = []
 
     init(id: Int, name: String) {
         self.id = id
         self.name = name
+        self.hasRank = Array(repeating: .none, count: 3)
+        self.doesNotHaveRank = Array(repeating: .none, count: 3)
+        model.loadModel(fileName: "goF_model")
+        model.run()
     }
+
     func emptyHand() {
         hand.removeAll()
     }
 
-    func addCard(card: Card) {
+    func receiveCard(card: Card) {
         print("\(name) receives card!")
         hand.append(card)
-        sortHand()
-        objectWillChange.send()
         print("\(name) now has \(hand.count) cards!")
-    }
-    
-    func removeCard(card: Card) {
-        hand.removeAll(where: {$0 == card})
+        checkForBooks()
     }
 
     // Function that will be called when the player is asked for a specific rank
@@ -48,25 +77,16 @@ class Player: ObservableObject, Identifiable {
     }
 
     // Respond to another player's request for a specific rank
-    // Returns true if the card(s) were found and given, false otherwise
-    func respondToCardRequest(card: Card) -> Bool {
+    // Changed this to actually return the cards.
+    func respondToCardRequest(card: Card) -> [Card] {
         let hasCard = hasCard(ofRank: card.rank)
         if hasCard {
             let cardsGiven = giveAllCards(ofRank: card.rank)
             // Call some function to send the cards to the player who asked for them. Maybe somehow notify the game
             // TODO: Implement logic to send the cards to the player who asked for them
+            return cardsGiven
         }
-        return hasCard
-    }
-    
-    func sortHand() {
-        hand = hand.sorted { (lhs, rhs) in
-            if lhs.rank == rhs.rank { // <1>
-                return lhs.suit.rawValue > rhs.suit.rawValue
-            }
-            
-            return lhs.rank.rawValue > rhs.rank.rawValue // <2>
-        }        
+        return []
     }
 
     // Method to check for books and remove them from the player's hand
@@ -88,5 +108,19 @@ class Player: ObservableObject, Identifiable {
         }
 
         return booksCount
+    }
+    //function that checks what rank player of ID playerID asked for
+    func playerAskedRank(_ playerID: Int,  _ playerAskedID: Int, _ rank: Rank) {
+        self.hasRank[playerID] = rank
+        model.modifyLastAction(slot: "playerAsking", value: playerID.description)
+        model.modifyLastAction(slot: "rank", value: rank.description)
+        model.modifyLastAction(slot: "playerAsked", value: playerAskedID.description)
+    }
+
+    func playerAskedModel(_ playerID: Int, _ rank: Rank){
+        self.hasRank[playerID] = rank
+        model.modifyLastAction(slot: "playerAsking", value: playerID.description)
+        model.modifyLastAction(slot: "rank", value: rank.description)
+
     }
 }

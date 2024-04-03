@@ -25,4 +25,8 @@ struct Card: Equatable {
     mutating func toggleDrag() {
         drag.toggle()
     }
+    
+    static func == (lhs: Card, rhs: Card) -> Bool {
+        return lhs.suit == rhs.suit && lhs.rank == rhs.rank
+    }
 }

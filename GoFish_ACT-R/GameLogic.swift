@@ -3,9 +3,11 @@ import SwiftUI
 
 class Game: ObservableObject {
     var deck = Deck()
+    var askPile = AskPile()
     var players: [Player] = []
-    var currentPlayerIndex = 0
+    var currentPlayerIndex = -1
     var running = false
+    var canFish = false
 
     init(playerIds: [Int]) {
         // Initialize players
@@ -35,9 +37,9 @@ class Game: ObservableObject {
                 if var card = deck.dealCard() {
                     if player.id == 1 {
                         card.toggleOpen()
-                        card.toggleDrag()
+                        //card.toggleDrag()
                     }
-                    player.receiveCard(card: card)
+                    player.addCard(card: card)
                     objectWillChange.send()
                 }
             }
@@ -45,31 +47,70 @@ class Game: ObservableObject {
     }
     
     func dealCard() {
-        let currentplayer = players[currentPlayerIndex]
+        let currentPlayer = players[currentPlayerIndex]
         if var card = deck.dealCard() {
             print("dealcard() running!")
             if currentPlayerIndex == 0 {
                 card.toggleOpen()
             }
-            currentplayer.receiveCard(card: card)
+            currentPlayer.addCard(card: card)
             objectWillChange.send()
         }
     }
     
     func nextPlayer() {
-        currentPlayerIndex = (currentPlayerIndex + 1) % players.count
+        currentPlayerIndex = (currentPlayerIndex+1) % players.count
         objectWillChange.send()
     }
-
-    func playTurn() {
-        // what card does the player ask for and whom?
-        
-        // TODO: Implement logic for the current player's turn
-        // - Choose a player to ask for a card
-        // - Handle the card request (use handleRequest)
+    
+    func addAskAction(card: Card) {
         let currentPlayer = players[currentPlayerIndex]
-        
-        checkGameEndConditions()
+        if (currentPlayerIndex == 0) {
+            if !askPile.cards.isEmpty {
+                currentPlayer.addCard(card: askPile.removeCard())
+            }
+            currentPlayer.removeCard(card: card)
+            askPile.addCard(card: card)
+            objectWillChange.send()
+        }
+    }
+    
+    func processAskAction(player: Player) {
+        if currentPlayerIndex == 0 && !askPile.cards.isEmpty {
+            let cards = player.giveAllCards(ofRank: askPile.cards[0].rank)
+            if !askPile.cards.isEmpty {
+                for var card in cards {
+                    player.removeCard(card: card)
+                    card.toggleOpen()
+                    askPile.addCard(card: card)
+                    objectWillChange.send()
+                }
+                if askPile.cards.count > 1 {
+                    let seconds = 1.5
+                    DispatchQueue.main.asyncAfter(deadline: .now() + seconds) { [self] in
+                        for _ in self.askPile.cards {
+                            self.players[self.currentPlayerIndex].addCard(card: self.askPile.removeCard())
+                            objectWillChange.send()
+                        }
+                    }
+                } else {
+                    players[currentPlayerIndex].addCard(card: askPile.removeCard())
+                    ToggleFish()
+                    objectWillChange.send()
+                }
+            } else {
+                print("ERROR NO CARD SELECTED IN ASKPILE")
+            }
+        }
+    }
+    
+    func ToggleFish() {
+        canFish.toggle()
+    }
+    
+    func goFish() {
+        dealCard()
+        ToggleFish()
         nextPlayer()
     }
 
@@ -90,4 +131,3 @@ class Game: ObservableObject {
         // - If the game has ended, determine the winner or handle the end of the game
     }
 }
-

@@ -15,6 +15,25 @@
 		E8A480832B90C4850037C2BA /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8A480822B90C4850037C2BA /* ContentView.swift */; };
 		E8A480852B90C4870037C2BA /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E8A480842B90C4870037C2BA /* Assets.xcassets */; };
 		E8A480882B90C4870037C2BA /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E8A480872B90C4870037C2BA /* Preview Assets.xcassets */; };
+		E8CC55102BBD867E004ECD4C /* AskPile.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8CC550F2BBD867E004ECD4C /* AskPile.swift */; };
+		E8CC55122BBDA806004ECD4C /* GFModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8CC55112BBDA806004ECD4C /* GFModel.swift */; };
+		E8CC55142BBDA9C9004ECD4C /* ViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8CC55132BBDA9C8004ECD4C /* ViewModel.swift */; };
+		E8CC553B2BBDACE4004ECD4C /* Model.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8CC55312BBDACE3004ECD4C /* Model.swift */; };
+		E8CC553C2BBDACE4004ECD4C /* goF_model.actr in Resources */ = {isa = PBXBuildFile; fileRef = E8CC55322BBDACE3004ECD4C /* goF_model.actr */; };
+		E8CC553D2BBDACE4004ECD4C /* Parser.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8CC55332BBDACE3004ECD4C /* Parser.swift */; };
+		E8CC553E2BBDACE4004ECD4C /* Declarative.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8CC55342BBDACE3004ECD4C /* Declarative.swift */; };
+		E8CC553F2BBDACE4004ECD4C /* BufferCondition.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8CC55352BBDACE3004ECD4C /* BufferCondition.swift */; };
+		E8CC55402BBDACE4004ECD4C /* Chunk.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8CC55362BBDACE3004ECD4C /* Chunk.swift */; };
+		E8CC55412BBDACE4004ECD4C /* Procedural.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8CC55372BBDACE3004ECD4C /* Procedural.swift */; };
+		E8CC55422BBDACE4004ECD4C /* BufferAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8CC55382BBDACE3004ECD4C /* BufferAction.swift */; };
+		E8CC55432BBDACE4004ECD4C /* Production.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8CC55392BBDACE4004ECD4C /* Production.swift */; };
+		E8CC55442BBDACE4004ECD4C /* Instantiation.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8CC553A2BBDACE4004ECD4C /* Instantiation.swift */; };
+		E8CC554B2BBDAD3E004ECD4C /* SlotAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8CC55452BBDAD3D004ECD4C /* SlotAction.swift */; };
+		E8CC554C2BBDAD3E004ECD4C /* SlotCondition.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8CC55462BBDAD3D004ECD4C /* SlotCondition.swift */; };
+		E8CC554D2BBDAD3E004ECD4C /* Tokenizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8CC55472BBDAD3D004ECD4C /* Tokenizer.swift */; };
+		E8CC554E2BBDAD3E004ECD4C /* Support.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8CC55482BBDAD3E004ECD4C /* Support.swift */; };
+		E8CC554F2BBDAD3E004ECD4C /* Vision.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8CC55492BBDAD3E004ECD4C /* Vision.swift */; };
+		E8CC55502BBDAD3E004ECD4C /* Temporal.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8CC554A2BBDAD3E004ECD4C /* Temporal.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -27,6 +46,25 @@
 		E8A480822B90C4850037C2BA /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		E8A480842B90C4870037C2BA /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		E8A480872B90C4870037C2BA /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		E8CC550F2BBD867E004ECD4C /* AskPile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AskPile.swift; sourceTree = "<group>"; };
+		E8CC55112BBDA806004ECD4C /* GFModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GFModel.swift; sourceTree = "<group>"; };
+		E8CC55132BBDA9C8004ECD4C /* ViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewModel.swift; sourceTree = "<group>"; };
+		E8CC55312BBDACE3004ECD4C /* Model.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Model.swift; sourceTree = "<group>"; };
+		E8CC55322BBDACE3004ECD4C /* goF_model.actr */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = goF_model.actr; sourceTree = "<group>"; };
+		E8CC55332BBDACE3004ECD4C /* Parser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Parser.swift; sourceTree = "<group>"; };
+		E8CC55342BBDACE3004ECD4C /* Declarative.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Declarative.swift; sourceTree = "<group>"; };
+		E8CC55352BBDACE3004ECD4C /* BufferCondition.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BufferCondition.swift; sourceTree = "<group>"; };
+		E8CC55362BBDACE3004ECD4C /* Chunk.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Chunk.swift; sourceTree = "<group>"; };
+		E8CC55372BBDACE3004ECD4C /* Procedural.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Procedural.swift; sourceTree = "<group>"; };
+		E8CC55382BBDACE3004ECD4C /* BufferAction.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BufferAction.swift; sourceTree = "<group>"; };
+		E8CC55392BBDACE4004ECD4C /* Production.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Production.swift; sourceTree = "<group>"; };
+		E8CC553A2BBDACE4004ECD4C /* Instantiation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Instantiation.swift; sourceTree = "<group>"; };
+		E8CC55452BBDAD3D004ECD4C /* SlotAction.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SlotAction.swift; sourceTree = "<group>"; };
+		E8CC55462BBDAD3D004ECD4C /* SlotCondition.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SlotCondition.swift; sourceTree = "<group>"; };
+		E8CC55472BBDAD3D004ECD4C /* Tokenizer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Tokenizer.swift; sourceTree = "<group>"; };
+		E8CC55482BBDAD3E004ECD4C /* Support.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Support.swift; sourceTree = "<group>"; };
+		E8CC55492BBDAD3E004ECD4C /* Vision.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Vision.swift; sourceTree = "<group>"; };
+		E8CC554A2BBDAD3E004ECD4C /* Temporal.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Temporal.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -43,6 +81,7 @@
 		E8A480742B90C4850037C2BA = {
 			isa = PBXGroup;
 			children = (
+				E8CC55512BBDAD45004ECD4C /* ACT-R */,
 				E8A4807F2B90C4850037C2BA /* GoFish_ACT-R */,
 				E8A4807E2B90C4850037C2BA /* Products */,
 			);
@@ -67,6 +106,9 @@
 				E8A480822B90C4850037C2BA /* ContentView.swift */,
 				E8A480842B90C4870037C2BA /* Assets.xcassets */,
 				E8A480862B90C4870037C2BA /* Preview Content */,
+				E8CC550F2BBD867E004ECD4C /* AskPile.swift */,
+				E8CC55112BBDA806004ECD4C /* GFModel.swift */,
+				E8CC55132BBDA9C8004ECD4C /* ViewModel.swift */,
 			);
 			path = "GoFish_ACT-R";
 			sourceTree = "<group>";
@@ -77,6 +119,29 @@
 				E8A480872B90C4870037C2BA /* Preview Assets.xcassets */,
 			);
 			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		E8CC55512BBDAD45004ECD4C /* ACT-R */ = {
+			isa = PBXGroup;
+			children = (
+				E8CC55452BBDAD3D004ECD4C /* SlotAction.swift */,
+				E8CC55462BBDAD3D004ECD4C /* SlotCondition.swift */,
+				E8CC55482BBDAD3E004ECD4C /* Support.swift */,
+				E8CC554A2BBDAD3E004ECD4C /* Temporal.swift */,
+				E8CC55472BBDAD3D004ECD4C /* Tokenizer.swift */,
+				E8CC55492BBDAD3E004ECD4C /* Vision.swift */,
+				E8CC55382BBDACE3004ECD4C /* BufferAction.swift */,
+				E8CC55352BBDACE3004ECD4C /* BufferCondition.swift */,
+				E8CC55362BBDACE3004ECD4C /* Chunk.swift */,
+				E8CC55342BBDACE3004ECD4C /* Declarative.swift */,
+				E8CC55322BBDACE3004ECD4C /* goF_model.actr */,
+				E8CC553A2BBDACE4004ECD4C /* Instantiation.swift */,
+				E8CC55312BBDACE3004ECD4C /* Model.swift */,
+				E8CC55332BBDACE3004ECD4C /* Parser.swift */,
+				E8CC55372BBDACE3004ECD4C /* Procedural.swift */,
+				E8CC55392BBDACE4004ECD4C /* Production.swift */,
+			);
+			path = "ACT-R";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -138,6 +203,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				E8A480882B90C4870037C2BA /* Preview Assets.xcassets in Resources */,
+				E8CC553C2BBDACE4004ECD4C /* goF_model.actr in Resources */,
 				E8A480852B90C4870037C2BA /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -149,11 +215,29 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E8CC55432BBDACE4004ECD4C /* Production.swift in Sources */,
+				E8CC55442BBDACE4004ECD4C /* Instantiation.swift in Sources */,
 				E815A0262B9AA33900C5FF06 /* GameLogic.swift in Sources */,
+				E8CC553D2BBDACE4004ECD4C /* Parser.swift in Sources */,
+				E8CC553F2BBDACE4004ECD4C /* BufferCondition.swift in Sources */,
+				E8CC55142BBDA9C9004ECD4C /* ViewModel.swift in Sources */,
 				E8A480832B90C4850037C2BA /* ContentView.swift in Sources */,
+				E8CC55422BBDACE4004ECD4C /* BufferAction.swift in Sources */,
 				E815A0232B9AA33900C5FF06 /* Player.swift in Sources */,
 				E815A0252B9AA33900C5FF06 /* Deck.swift in Sources */,
+				E8CC554D2BBDAD3E004ECD4C /* Tokenizer.swift in Sources */,
+				E8CC554E2BBDAD3E004ECD4C /* Support.swift in Sources */,
+				E8CC55402BBDACE4004ECD4C /* Chunk.swift in Sources */,
+				E8CC55502BBDAD3E004ECD4C /* Temporal.swift in Sources */,
+				E8CC553B2BBDACE4004ECD4C /* Model.swift in Sources */,
+				E8CC55412BBDACE4004ECD4C /* Procedural.swift in Sources */,
+				E8CC55102BBD867E004ECD4C /* AskPile.swift in Sources */,
+				E8CC553E2BBDACE4004ECD4C /* Declarative.swift in Sources */,
+				E8CC554F2BBDAD3E004ECD4C /* Vision.swift in Sources */,
+				E8CC554C2BBDAD3E004ECD4C /* SlotCondition.swift in Sources */,
+				E8CC554B2BBDAD3E004ECD4C /* SlotAction.swift in Sources */,
 				E8A480812B90C4850037C2BA /* GoFish_ACT_RApp.swift in Sources */,
+				E8CC55122BBDA806004ECD4C /* GFModel.swift in Sources */,
 				E815A0242B9AA33900C5FF06 /* Card.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
