@@ -1,4 +1,4 @@
-;;; Model of Rock Paper Scissors
+;;; Model of Go Fish
 ;;;
 
 (add-dm
@@ -24,12 +24,12 @@
      isa goal
      state checkTurn
    =action>
-    isa Turn
-    player  = player1
+     isa Turn
+     player  = player1
 ==>
    =goal>
      state remember-asking
-    -action>
+   -action>
 )
 
 (p remember-player-asking-diff
@@ -37,10 +37,10 @@
      isa goal
      state remember-asking
    =action>
-    isa ask
-    playerAsking  = player1
-    rank  = askedR   
-    playerAsked = player2
+     isa ask
+     playerAsking  = player1
+     rank  = askedR   
+     playerAsked = player2
 ==>
    =goal>
      state remember-asked
@@ -57,9 +57,9 @@
      isa goal
      state remember-asked
    =action>
-    isa ask
-    player  = player2
-    rank  = askedR   
+     isa ask
+     player  = player2
+     rank  = askedR   
 ==>
    =goal>
      state checkTurn
@@ -77,10 +77,20 @@
      isa goal
      state remember-asking
    =action>
+<<<<<<< HEAD
+     isa ask
+     playerAsking  = player1
+     rank  = askedR   
+     playerAsked = model
+=======
     isa ask
     playerAsking  = player1
     rank  = askedR   
     playerAsked = model ; I think we could remove this. Don't see the relevance
+<<<<<<< Updated upstream
+=======
+>>>>>>> 95effffeeb9c832fc51585ed1971bfdedc491a89
+>>>>>>> Stashed changes
 ==>
    +goal>
      state check-rank
@@ -102,16 +112,16 @@
      state check-rank
      rank = askedR
    =action>
-    isa inHand
-    rank  =   askedR
-    isThere  = yes
+     isa inHand
+     rank  =   askedR
+     isThere  = yes
 ==>
    =goal>
      state checkTurn
    +action>
-      isa response
-      rank = askedR
-      give = Yes
+     isa response
+     rank = askedR
+     give = Yes
 )
 
 (p model-is-asked-has-no
@@ -120,16 +130,16 @@
      state check-rank
      rank = askedR
    =action>
-    isa inHand
-    rank  =   askedR
-    isThere  = no
+     isa inHand
+     rank  =   askedR
+     isThere  = no
 ==>
    =goal>
      state checkTurn
    +action>
-      isa response
-      rank = askedR
-      give = Go-fish
+     isa response
+     rank = askedR
+     give = Go-fish
 )
 
 (p checkTurn-M
@@ -137,14 +147,14 @@
      isa goal
      state checkTurn
    =action>
-    isa Turn
-    player  = model
+     isa Turn
+     player  = model
 ==>
    =goal>
-      state check-hand
-    +action>
-      isa inHand
-      isThere = yes
+     state check-hand
+   +action>
+     isa inHand
+     isThere = yes
 )
 
 (p checkHand
@@ -152,16 +162,16 @@
      isa goal
      state check-hand
    =action>
-    isa inHand
-    rank = seenR
-    isThere  = yes
+     isa inHand
+     rank = seenR
+     isThere  = yes
 ==>
    +goal>
-      state check-if-asked
-      rank = seenR
-    +retrieval>
-      isa playerHas
-      rank  = seenR
+     state check-if-asked
+     rank = seenR
+   +retrieval>
+     isa playerHas
+     rank  = seenR
 )
 
 (p rank-no-one-has
@@ -175,10 +185,10 @@
      player =nil
 ==>
    =goal>
-      state checkHand
-    +action>
-      isa inHand
-      isThere = yes
+     state checkHand
+   +action>
+     isa inHand
+     isThere = yes
 )
 
 (p rank-one-has
@@ -192,9 +202,9 @@
      player = player1
 ==>
    +goal>
-      state request-player
-      rank =seenR
-      player  =player1
+     state request-player
+     rank =seenR
+     player  =player1
 )
 
 (p rank-one-has
@@ -205,8 +215,8 @@
      player  =player1
 ==>
    +goal>
-      state check-nr-cards
-      rank =seenR
+     state check-nr-cards
+     rank =seenR
    +action>
      isa request
      rank 
