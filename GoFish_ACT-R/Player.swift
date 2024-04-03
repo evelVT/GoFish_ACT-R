@@ -6,11 +6,16 @@ class Player: ObservableObject, Identifiable {
     @Published var name: String
     @Published var score = 0
     private(set) var hand: [Card] = []
-    let model = Model()
+    @Published var gfModel: GFModel?
 
     init(id: Int, name: String) {
         self.id = id
         self.name = name
+        if id != 1{
+            self.gfModel = GFModel()
+
+        }
+
     }
     func emptyHand() {
         hand.removeAll()
@@ -25,7 +30,7 @@ class Player: ObservableObject, Identifiable {
         print("Check for books in \(name)'s hand!")
         score += checkForBooks()
     }
-    
+
     func removeCard(card: Card) {
         hand.removeAll(where: {$0 == card})
     }
@@ -49,15 +54,15 @@ class Player: ObservableObject, Identifiable {
         // TODO: Implement logic to send the cards to the player who asked for them
        return nil
     }
-    
+
     func sortHand() {
         hand = hand.sorted { (lhs, rhs) in
             if lhs.rank == rhs.rank { // <1>
                 return lhs.suit.rawValue > rhs.suit.rawValue
             }
-            
+
             return lhs.rank.rawValue > rhs.rank.rawValue // <2>
-        }        
+        }
     }
 
     // Method to check for books and remove them from the player's hand
@@ -80,20 +85,6 @@ class Player: ObservableObject, Identifiable {
 
         return booksCount
     }
-    
-    
-    //function that checks what rank player of ID playerID asked for
-    func playerAskedRank(_ playerID: Int,  _ playerAskedID: Int, _ rank: Rank) {
-        self.hasRank[playerID] = rank
-        model.modifyLastAction(slot: "playerAsking", value: playerID.description)
-        model.modifyLastAction(slot: "rank", value: rank.description)
-        model.modifyLastAction(slot: "playerAsked", value: playerAskedID.description)
-    }
 
-    func playerAskedModel(_ playerID: Int, _ rank: Rank){
-        self.hasRank[playerID] = rank
-        model.modifyLastAction(slot: "playerAsking", value: playerID.description)
-        model.modifyLastAction(slot: "rank", value: rank.description)
 
-    }
 }

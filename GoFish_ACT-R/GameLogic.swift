@@ -4,24 +4,22 @@ import SwiftUI
 class Game: ObservableObject {
     var deck = Deck()
     var askPile = AskPile()
-    //Using Any for now; I think I will be able to make a protocol later to make it cleaner
-    var players: [Any] = []
+    var players: [Player] = []
     var currentPlayerIndex = -1
     var running = false
     var canFish = false
 
     init(playerIds: [Int]) {
+        // Initialize players
         for id in playerIds {
-            if id == 1 {
-                players.append(Player(id: id, name: "Player \(id)"))
-            } else {
-                players.append(GFModel(id: id, name: "Player \(id)"))
+            let player = Player(id: id, name: "Player \(id)")
+            players.append(player)
         }
     }
-    
+
     func startNew() {
-        for index in players.indices {
-            players[index].emptyHand()
+        for player in players {
+            player.emptyHand()
         }
         running.toggle()
         deck.initializeDeck()
@@ -33,28 +31,29 @@ class Game: ObservableObject {
     func dealInitialCards() {
         // Assuming 5 cards per player for the initial deal
         let initialCardsCount = 5
+
         for _ in 0..<initialCardsCount {
-            for index in players.indices {
+            for player in players {
                 if var card = deck.dealCard() {
-                    if players[index].id == 1 {
+                    if player.id == 1 {
                         card.toggleOpen()
-                        card.toggleDrag()
+                        //card.toggleDrag()
                     }
-                    players[index].addCard(card: card)
+                    player.addCard(card: card)
                     objectWillChange.send()
                 }
             }
         }
     }
-    
+
     func dealCard() {
-        //let currentPlayer = players[currentPlayerIndex]
+        let currentPlayer = players[currentPlayerIndex]
         if var card = deck.dealCard() {
             print("dealcard() running!")
             if currentPlayerIndex == 0 {
                 card.toggleOpen()
             }
-            players[currentPlayerIndex].addCard(card: card)
+            currentPlayer.addCard(card: card)
             objectWillChange.send()
         }
     }
