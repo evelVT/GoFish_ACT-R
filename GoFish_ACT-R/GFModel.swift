@@ -50,12 +50,44 @@ struct GFModel {
         model.modifyLastAction(slot: "playerAsking", value: playerID.description)
         model.modifyLastAction(slot: "rank", value: rank.description)
         model.modifyLastAction(slot: "playerAsked", value: playerAskedID.description)
+        
     }
 
     mutating func playerAskedModel(_ playerID: Int, _ rank: Rank){
         self.hasRank[playerID] = rank
         model.modifyLastAction(slot: "playerAsking", value: playerID.description)
         model.modifyLastAction(slot: "rank", value: rank.description)
+        model.modifyLastAction(slot: "playerAsked", value: "model_turn")
+        
+    }
+
+    mutating func hasCard(_ rank: Rank){
+        model.modifyLastAction(slot: "rank", value : rank.description)
+        model.modifyLastAction(slot: "isThere", value : "yes")
+    }
+
+    mutating func noCard(_rank: Rank){
+        model.modifyLastAction(slot: "rank", value : rank.description)
+        model.modifyLastAction(slot: "isThere", value : "no")
+    }    
+
+    
+
+    mutating func notMyTurn(){
+        model.modifyLastAction(slot:"player", value: "opponent_turn")
+    }
+
+    mutating func myTurn(){
+        model.modifyLastAction(slot:"player", value: "model_turn")
+    }
+
+    mutating func goRandom(){
+        model.modifyLastAction(slot: "players", value: "none")
+    }
+
+    mutating func askRandom(_ randomPlayerID: Int, _ randomRank: Rank){
+        model.modifyLastAction(slot: "rank", value: randomRank )
+        model.modifyLastAction(slot: "player": value: String(randomPlayerID))
 
     }
 }

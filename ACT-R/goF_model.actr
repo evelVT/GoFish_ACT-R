@@ -44,6 +44,7 @@
 ==>
    =goal>
      state remember-asked
+   =action>
    +imaginal>
      isa playerHas
      player =player1
@@ -80,7 +81,7 @@
      isa ask
      playerAsking  =player1
      rank  =askedR
-     playerAsked =model
+     playerAsked "model_turn"
 ==>
    +goal>
      state check-rank
@@ -89,9 +90,9 @@
      isa playerHas
      player =player1
      rank  =askedR
-  +=action>
+   +action>
      isa inHand
-     rank = askedR
+     rank =askedR
    -imaginal>
 
 )
@@ -108,10 +109,10 @@
 ==>
    =goal>
      state checkTurn
-   +action>
-     isa response
-     rank =askedR
-     give "yes"
+   ;+action>
+    ; isa response
+     ;rank =askedR
+     ;give "yes"
 )
 
 (p model-is-asked-has-no
@@ -126,10 +127,10 @@
 ==>
    =goal>
      state checkTurn
-   +action>
-     isa response
-     rank =askedR
-     give "Go_Fish"
+  ; +action>
+    ; isa response
+    ; rank =askedR
+    ; give "Go_Fish"
 )
 
 (p checkTurn-M
@@ -172,7 +173,7 @@
    =retrieval>
      isa playerHas
      rank  =seenR
-     player =nil
+     player nil
 ==>
    =goal>
      state checkHand
@@ -213,11 +214,11 @@
      isa request
      rank seenR
      player =player1
-   +imaginal>
-	 isa round
-	 player =player1
-	 rank  =seenR
-   -imaginal>
+  ; +imaginal>
+	; isa round
+	; player =player1
+	; rank  =seenR
+  ; -imaginal>
 )
 
 (p cards-not-received
@@ -322,6 +323,7 @@
 	 state check-hand
    =action>
 	 isa noPlayerHasAny
+   players "none"
 ==>
    =goal>
 	 state pick-random
