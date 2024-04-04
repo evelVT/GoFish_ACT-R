@@ -6,7 +6,7 @@ enum Rank: Int, CaseIterable, CustomStringConvertible {
     case none = 0 // Represents the initial state where the rank is unknown
     case two = 2, three, four, five, six, seven, eight, nine, ten
     case jack, queen, king, ace
-    
+
     var description: String {
         switch self {
         case .none: return "none"
@@ -45,33 +45,33 @@ struct GFModel {
 
     }
     //function that checks what rank player of ID playerID asked for
-    mutating func playerAskedRank(_ playerID: Int,  _ playerAskedID: Int, _ rank: Rank) {
-        self.hasRank[playerID] = rank
+    mutating func playerAskedRank(_ playerID: Int,  _ playerAskedID: Int, _ rank: Card.Rank) {
+        //self.hasRank[playerID] = rank
         model.modifyLastAction(slot: "playerAsking", value: playerID.description)
         model.modifyLastAction(slot: "rank", value: rank.description)
         model.modifyLastAction(slot: "playerAsked", value: playerAskedID.description)
-        
+
     }
 
-    mutating func playerAskedModel(_ playerID: Int, _ rank: Rank){
-        self.hasRank[playerID] = rank
+    mutating func playerAskedModel(_ playerID: Int, _ rank: Card.Rank){
+       // self.hasRank[playerID] = rank
         model.modifyLastAction(slot: "playerAsking", value: playerID.description)
         model.modifyLastAction(slot: "rank", value: rank.description)
         model.modifyLastAction(slot: "playerAsked", value: "model_turn")
-        
+
     }
 
-    mutating func hasCard(_ rank: Rank){
+    mutating func hasCard(_ rank: Card.Rank){
         model.modifyLastAction(slot: "rank", value : rank.description)
         model.modifyLastAction(slot: "isThere", value : "yes")
     }
 
-    mutating func noCard(_rank: Rank){
+    mutating func noCard(_ rank: Card.Rank){
         model.modifyLastAction(slot: "rank", value : rank.description)
         model.modifyLastAction(slot: "isThere", value : "no")
-    }    
+    }
 
-    
+
 
     mutating func notMyTurn(){
         model.modifyLastAction(slot:"player", value: "opponent_turn")
@@ -85,9 +85,9 @@ struct GFModel {
         model.modifyLastAction(slot: "players", value: "none")
     }
 
-    mutating func askRandom(_ randomPlayerID: Int, _ randomRank: Rank){
-        model.modifyLastAction(slot: "rank", value: randomRank )
-        model.modifyLastAction(slot: "player": value: String(randomPlayerID))
+    mutating func askRandom(_ randomPlayerID: Int, _ randomRank: Card.Rank){
+        model.modifyLastAction(slot: "rank", value: randomRank.description )
+        model.modifyLastAction(slot: "player", value: String(randomPlayerID))
 
     }
 }

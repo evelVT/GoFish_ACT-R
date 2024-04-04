@@ -36,10 +36,11 @@ class Game: ObservableObject {
             }
             else if currentPlayerIndex != 0 && player.id == currentPlayerIndex{
                 player.gfModel?.myTurn()
-                player.gfModel?.goRandom(currentPlayerIndex)
+                player.gfModel?.goRandom()
+                modelAsks(currentPlayerIndex)
             }
         }
-
+    }
     func dealInitialCards() {
         // Assuming 5 cards per player for the initial deal
         let initialCardsCount = 5
@@ -69,14 +70,14 @@ class Game: ObservableObject {
             objectWillChange.send()
         }
     }
-    
+
     func nextPlayer() {
         currentPlayerIndex = (currentPlayerIndex+1) % players.count
         objectWillChange.send()
         notifyModels()
 
     }
-    
+
     func addAskAction(card: Card) {
         let currentPlayer = players[currentPlayerIndex]
         if (currentPlayerIndex == 0) {
@@ -88,32 +89,38 @@ class Game: ObservableObject {
             objectWillChange.send()
         }
     }
-    
-    
+
+
     func modelAsks(_ index: Int){
-        var randomPlayer = players.filter({ $0.id != index }).randomElement()
-        var randomRank = players[index].hand.randomElement().rank
-        players[index].gfModel?.askRandom(randomPlayer.id, randomRank)
+        var randomPlayer = players[index+1]
+        if let randomCard = players[index].hand.randomElement() {
+            let randomRank = randomCard.rank
+            players[index].gfModel?.askRandom(randomPlayer.id, randomRank)
+        }
     }
 
 
     func processAskAction(player: Player) {
         if currentPlayerIndex == 0 && !askPile.cards.isEmpty {
-            for player1 in players {
-                if player1.id != 1 && player1.id != player.id{
-                    player1.gfModel?.playerAskedRank(1, player.id, askPile.cards[0].rank)
-                }
-                else if player1.id != 1 && player1.id == player.id {
-                    player1.gfModel?.playerAskedModel(1, askPile.cards[0].rank)
-                    //if player1.gfModel?.lastAction(slot: "")
-                    if player1.hasCard(ofRank: askPile.cards[0].rank) {
-                        player1.gfModel.hasCard(askPile.cards[0].rank)
+            for index in players.indices {
+                var player1 = players[index]
+
+                if player1.id != 1 {
+                    if player1.id != player.id {
+                        player1.gfModel?.playerAskedRank(1, player.id, askPile.cards[0].rank)
+                    } else {
+                        player1.gfModel?.playerAskedModel(1, askPile.cards[0].rank)
+                        // Assuming hasCard and noCard are methods of gfModel that mutate its state
+                        if player1.hasCard(ofRank: askPile.cards[0].rank) {
+                            player1.gfModel?.hasCard(askPile.cards[0].rank)
+                        } else {
+                            player1.gfModel?.noCard(askPile.cards[0].rank)
+                        }
                     }
-                    else{
-                        player1.gfModel.noCard(askPile.cards[0].rank)
-                    }
+                    players[index] = player1 // Re-assign player1 back to the array to apply the changes
                 }
             }
+
             let cards = player.giveAllCards(ofRank: askPile.cards[0].rank)
 
             if !askPile.cards.isEmpty {
