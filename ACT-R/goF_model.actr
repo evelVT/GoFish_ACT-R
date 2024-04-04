@@ -1,8 +1,8 @@
-;;; Model of Rock Paper Scissors
+;;; Model of Go Fish
 ;;;
 
 (add-dm
-    
+    (4Full isa fullSet needCards num)
     (goal isa goal state start)
 )
 
@@ -24,12 +24,12 @@
      isa goal
      state checkTurn
    =action>
-    isa Turn
-    player  = player1
+     isa Turn
+     player  = player1
 ==>
    =goal>
      state remember-asking
-    -action>
+   -action>
 )
 
 (p remember-player-asking-diff
@@ -37,10 +37,10 @@
      isa goal
      state remember-asking
    =action>
-    isa ask
-    playerAsking  = player1
-    rank  = askedR   
-    playerAsked = player2
+     isa ask
+     playerAsking  = player1
+     rank  = askedR   
+     playerAsked = player2
 ==>
    =goal>
      state remember-asked
@@ -57,9 +57,9 @@
      isa goal
      state remember-asked
    =action>
-    isa ask
-    player  = player2
-    rank  = askedR   
+     isa ask
+     player  = player2
+     rank  = askedR   
 ==>
    =goal>
      state checkTurn
@@ -77,10 +77,10 @@
      isa goal
      state remember-asking
    =action>
-    isa ask
-    playerAsking  = player1
-    rank  = askedR   
-    playerAsked = model ; I think we could remove this. Don't see the relevance
+     isa ask
+     playerAsking  = player1
+     rank  = askedR   
+     playerAsked = model
 ==>
    +goal>
      state check-rank
@@ -102,16 +102,16 @@
      state check-rank
      rank = askedR
    =action>
-    isa inHand
-    rank  =   askedR
-    isThere  = yes
+     isa inHand
+     rank  =   askedR
+     isThere  = yes
 ==>
    =goal>
      state checkTurn
    +action>
-      isa response
-      rank = askedR
-      give = Yes
+     isa response
+     rank = askedR
+     give = Yes
 )
 
 (p model-is-asked-has-no
@@ -120,16 +120,16 @@
      state check-rank
      rank = askedR
    =action>
-    isa inHand
-    rank  =   askedR
-    isThere  = no
+     isa inHand
+     rank  =   askedR
+     isThere  = no
 ==>
    =goal>
      state checkTurn
    +action>
-      isa response
-      rank = askedR
-      give = Go-fish
+     isa response
+     rank = askedR
+     give = Go-fish
 )
 
 (p checkTurn-M
@@ -137,14 +137,14 @@
      isa goal
      state checkTurn
    =action>
-    isa Turn
-    player  = model
+     isa Turn
+     player  = model
 ==>
    =goal>
-      state check-hand
-    +action>
-      isa inHand
-      isThere = yes
+     state check-hand
+   +action>
+     isa inHand
+     isThere = yes
 )
 
 (p checkHand
@@ -152,16 +152,16 @@
      isa goal
      state check-hand
    =action>
-    isa inHand
-    rank = seenR
-    isThere  = yes
+     isa inHand
+     rank = seenR
+     isThere  = yes
 ==>
    +goal>
-      state check-if-asked
-      rank = seenR
-    +retrieval>
-      isa playerHas
-      rank  = seenR
+     state check-if-asked
+     rank = seenR
+   +retrieval>
+     isa playerHas
+     rank  = seenR
 )
 
 (p rank-no-one-has
@@ -175,10 +175,11 @@
      player =nil
 ==>
    =goal>
-      state checkHand
-    +action>
-      isa inHand
-      isThere = yes
+     state checkHand
+   +action>
+     isa inHand
+     isThere = yes
+     checked-this-round = no
 )
 
 (p rank-one-has
@@ -192,12 +193,13 @@
      player = player1
 ==>
    +goal>
-      state request-player
-      rank =seenR
-      player  =player1
+     state request-player
+     rank =seenR
+     player  =player1
+   -retrieval>
 )
 
-(p rank-one-has
+(p make-request
    =goal>
      isa goal
      state request-player
@@ -205,13 +207,143 @@
      player  =player1
 ==>
    +goal>
-      state check-nr-cards
-      rank =seenR
+     state check-response
+     rank =seenR
    +action>
      isa request
-     rank 
+     rank seenR
+     player = player1
+   +imaginal>
+	 isa round
+	 player = player1
+	 rank  = seenR
+   -imaginal>
 )
 
+(p cards-not-received
+   =goal>
+	 isa goal
+	 state check-response
+	 rank = seenR
+   =action>
+	 isa response-player
+	 rank = seenR
+	 give = Go-fish
+==>
+   +goal>
+	 state checkTurn
+   +action>
+     isa request
+     player = pile
+)
+
+(p cards-received
+   =goal>
+	 isa goal
+	 state check-response
+     rank = seenR
+   =action>
+	 isa response-player
+	 rank = seenR
+	 give = yes
+     number = num
+==>
+   +goal>
+     state check-set
+     rank = seenR
+   +imaginal>
+	 isa playerHasNo
+	 player = player1
+	 rank  = seenR
+   +action>
+     isa inHand
+     rank = seenR
+   -imaginal>
+)
+
+(p check-set
+   =goal>
+	 isa goal
+	 state check-set
+	 rank = seenR
+   =action>
+     isa inHand
+     rank = seenR
+     number = num
+==>
+   =goal>
+	 state check-still-need
+     rank = seenR
+     haveCards = num
+   +retrieval>
+	 isa fullSet
+)
+
+(p no-need
+   =goal>
+	 isa goal
+	 state check-still-need
+	 rank = seenR
+     haveCards = num
+   =retrieval>
+	 isa fullSet
+     needCards = num
+ ==>
+   =goal>
+	 state check-hand
+   +action>
+	 isa makeSet
+     rank = seenR
+   -retrieval>
+)
+
+(p still-need
+   =goal>
+	 isa goal
+	 state check-still-need
+	 rank = seenR
+     haveCards = num1
+   =retrieval>
+	 isa fullSet
+     needCards = num2
+ ==>
+   +goal>
+     state check-if-asked
+     rank = seenR
+   -retrieval>
+   +retrieval>
+     isa playerHas
+     rank  = seenR
+)
+
+(p no-player-has
+   =goal>
+	 isa goal
+	 state check-hand
+   =action>
+	 isa noPlayerHasAny
+==>
+   =goal>
+	 state pick-random
+   +action>
+     isa pickRandom
+)
+
+(p random-pick
+   =goal>
+	 isa goal
+	 state pick-random
+   =action>
+	 isa pickRandom
+     rank = randomR
+     player = randomP
+==>
+   =goal>
+	 state request-player
+     rank =randomR
+     player  = randomP
+   -action>
+)
 
 (goal-focus goal)
 
