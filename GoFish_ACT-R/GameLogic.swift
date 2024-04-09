@@ -38,9 +38,20 @@ class Game: ObservableObject {
                 player.gfModel?.myTurn()
                 player.gfModel?.goRandom()
                 modelAsks(currentPlayerIndex)
+
             }
         }
     }
+
+    func handleModelTurn() {
+        //I was thinking to have this function for more complex behaviour when it comes to the model's turn
+        let currentPlayer = players[currentPlayerIndex]
+        for card in currentPlayer.hand {
+            currentPlayer.gfModel?.tryRemember(card.rank)
+        }
+    }
+
+
     func dealInitialCards() {
         // Assuming 5 cards per player for the initial deal
         let initialCardsCount = 5
@@ -91,11 +102,19 @@ class Game: ObservableObject {
     }
 
 
-    func modelAsks(_ index: Int){
-        var randomPlayer = players[index+1]
-        if let randomCard = players[index].hand.randomElement() {
+    func modelAsks(_ index: Int) {
+        var ids = [1, 2, 3, 4] // List of player IDs
+
+        let removeIndex = currentPlayerIndex + 1 // Calculate index to remove
+        if removeIndex < ids.count {
+            ids.remove(at: removeIndex)
+        }
+
+        if let random_player_id = ids.randomElement(),
+           let randomCard = players[index].hand.randomElement() {
             let randomRank = randomCard.rank
-            players[index].gfModel?.askRandom(randomPlayer.id, randomRank)
+            // Call the askRandom method with safely unwrapped ID and rank
+            players[index].gfModel?.askRandom(random_player_id, randomRank)
         }
     }
 
@@ -148,11 +167,11 @@ class Game: ObservableObject {
             }
         }
     }
-    
+
     func ToggleFish() {
         canFish.toggle()
     }
-    
+
     func goFish() {
         dealCard()
         ToggleFish()
@@ -164,7 +183,7 @@ class Game: ObservableObject {
     }
 
     private func handleRequest(from targetPlayer: Player, to askingPlayer: Player, with card: Card) -> Bool {
-        
+
         // TODO: Implement logic to handle the card request
         // - If targetPlayer has the card, give it to askingPlayer and return true
         // - Else, askingPlayer draws a card from the deck and return false
@@ -176,3 +195,4 @@ class Game: ObservableObject {
         // - If the game has ended, determine the winner or handle the end of the game
     }
 }
+

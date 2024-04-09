@@ -13,9 +13,7 @@ class Player: ObservableObject, Identifiable {
         self.name = name
         if id != 1{
             self.gfModel = GFModel()
-
         }
-
     }
     func emptyHand() {
         hand.removeAll()
@@ -85,6 +83,8 @@ class Player: ObservableObject, Identifiable {
 
         return booksCount
     }
+
+
 
 
 }
