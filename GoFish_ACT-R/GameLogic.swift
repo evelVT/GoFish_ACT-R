@@ -30,18 +30,22 @@ class Game: ObservableObject {
     }
 
     func notifyModels() {
-        for player in players {
-            if currentPlayerIndex != 0 || player.id != currentPlayerIndex {
-                player.gfModel?.notMyTurn()
-            }
-            else if currentPlayerIndex != 0 && player.id == currentPlayerIndex{
-                player.gfModel?.myTurn()
-                player.gfModel?.goRandom()
-                modelAsks(currentPlayerIndex)
-
+            for player in players {
+                if player.id != 1{
+                    let currentPlayerId = currentPlayerIndex + 1
+                    if player.id == currentPlayerId {
+                        player.gfModel?.myTurn()
+                        print("Model \(player.id) is notified that it is their turn")
+                        player.gfModel?.myTurn()
+                        player.gfModel?.goRandom()
+                        modelAsks(currentPlayerIndex)
+                        // Additional strategy calls could be placed here if necessary
+                    } else {
+                        player.gfModel?.notMyTurn()
+                    }
+                }
             }
         }
-    }
 
     func handleModelTurn() {
         //I was thinking to have this function for more complex behaviour when it comes to the model's turn
