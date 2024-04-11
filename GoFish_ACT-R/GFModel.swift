@@ -58,6 +58,7 @@ struct GFModel {
     //Production: remember-player-asking-model
     mutating func playerAskedModel(_ playerID: Int, _ rank: Card.Rank){
        // self.hasRank[playerID] = rank
+        print("PlayerAskedModel called")
         model.modifyLastAction(slot: "playerAsking", value: playerID.description)
         model.modifyLastAction(slot: "rank", value: rank.description)
         model.modifyLastAction(slot: "playerAsked", value: "model_turn")
@@ -79,20 +80,35 @@ struct GFModel {
     //checkTurn-DiffP
     mutating func notMyTurn(){
         model.modifyLastAction(slot:"player", value: "opponent_turn")
+        model.run()
+
     }
 
     //checkTurn-M
     mutating func myTurn(){
+        if let modelActionString = model.lastAction(slot: "status") {
+            print(modelActionString)
+        }
         model.modifyLastAction(slot:"player", value: "model_turn")
+        model.run()
     }
 
     //no-player-has
     mutating func goRandom(){
+        print("goRandom fired")
+        print(model.actionChunk())
+        if let modelActionString = model.lastAction(slot: "isThere") {
+            print(modelActionString)
+        }
         model.modifyLastAction(slot: "players", value: "none")
+        model.run()
     }
 
     //random-pick
     mutating func askRandom(_ randomPlayerID: Int, _ randomRank: Card.Rank){
+        if model.lastAction(slot: "status") == "waiting"{
+            print("Model awaits for random rank and random player")
+        }
         model.modifyLastAction(slot: "rank", value: randomRank.description )
         model.modifyLastAction(slot: "player", value: String(randomPlayerID))
 

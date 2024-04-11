@@ -15,9 +15,12 @@
      state start
 ==>
    =goal>
+     isa goal
      state checkTurn
+  +action>
+    isa Turn
+    status check
 )
-
 
 (p checkTurn-DiffP
    =goal>
@@ -25,12 +28,13 @@
      state checkTurn
    =action>
      isa Turn
-     player  "opponent_turn"
+     player  opponent_turn
 ==>
    =goal>
      state remember-asking
-   -action>
+  ; -action>
 )
+
 
 (p remember-player-asking-diff
    =goal>
@@ -68,7 +72,7 @@
      isa playerHasNo
      player =player2
      rank  =askedR
-  -action>
+ ; -action>
   -imaginal>
 )
 
@@ -105,7 +109,7 @@
    =action>
      isa inHand
      rank  =askedR
-     isThere  "yes"
+     isThere  yes
 ==>
    =goal>
      state checkTurn
@@ -123,7 +127,7 @@
    =action>
      isa inHand
      rank  =askedR
-     isThere  "no"
+     isThere  no
 ==>
    =goal>
      state checkTurn
@@ -139,13 +143,13 @@
      state checkTurn
    =action>
      isa Turn
-     player  "model_turn"
+     player  model_turn
 ==>
    =goal>
      state check-hand
    +action>
      isa inHand
-     isThere =yes
+     isThere yes
 )
 
 (p checkHand
@@ -344,7 +348,7 @@
 	 state request-player
      rank =randomR
      player  =randomP
-   -action>
+   ;-action>
 )
 
 (goal-focus goal)

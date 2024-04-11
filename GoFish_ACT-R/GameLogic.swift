@@ -29,26 +29,28 @@ class Game: ObservableObject {
         notifyModels()
     }
 
+
     func notifyModels() {
-            for player in players {
-                if player.id != 1{
-                    let currentPlayerId = currentPlayerIndex + 1
-                    if player.id == currentPlayerId {
-                        player.gfModel?.myTurn()
-                        print("Model \(player.id) is notified that it is their turn")
-                        player.gfModel?.myTurn()
-                        player.gfModel?.goRandom()
-                        modelAsks(currentPlayerIndex)
-                        // Additional strategy calls could be placed here if necessary
-                    } else {
-                        player.gfModel?.notMyTurn()
-                    }
+        for player in players {
+            if player.id != 1{
+                let currentPlayerId = currentPlayerIndex + 1
+                if player.id == currentPlayerId {
+                    player.gfModel?.myTurn()
+                    print("Model \(player.id) is notified that it is their turn")
+                    //player.gfModel?.myTurn()
+                    player.gfModel?.goRandom()
+                    modelAsks(currentPlayerIndex)
+                    // Additional strategy calls could be placed here if necessary
+                } else {
+                    //player.gfModel?.notMyTurn()
+                    print("...")
                 }
             }
         }
+    }
+
 
     func handleModelTurn() {
-        //I was thinking to have this function for more complex behaviour when it comes to the model's turn
         let currentPlayer = players[currentPlayerIndex]
         for card in currentPlayer.hand {
             currentPlayer.gfModel?.tryRemember(card.rank)
@@ -89,6 +91,7 @@ class Game: ObservableObject {
     func nextPlayer() {
         currentPlayerIndex = (currentPlayerIndex+1) % players.count
         objectWillChange.send()
+        print("Current player index: \(currentPlayerIndex)")
         notifyModels()
 
     }
@@ -126,13 +129,15 @@ class Game: ObservableObject {
     func processAskAction(player: Player) {
         if currentPlayerIndex == 0 && !askPile.cards.isEmpty {
             for index in players.indices {
-                var player1 = players[index]
+                let player1 = players[index]
 
                 if player1.id != 1 {
                     if player1.id != player.id {
                         player1.gfModel?.playerAskedRank(1, player.id, askPile.cards[0].rank)
+
                     } else {
                         player1.gfModel?.playerAskedModel(1, askPile.cards[0].rank)
+                        print("Player 1 asked \(player1.name)")
                         // Assuming hasCard and noCard are methods of gfModel that mutate its state
                         if player1.hasCard(ofRank: askPile.cards[0].rank) {
                             player1.gfModel?.hasCard(askPile.cards[0].rank)
