@@ -141,8 +141,20 @@ class Game: ObservableObject {
                     player.gfModel?.playerAskedModel(playerAskingId, randomRank)
                     if players[playerAsked-1].hasCard(ofRank: randomRank) {
                         players[playerAsked-1].gfModel?.hasCard(randomRank)
+                        let cards = players[playerAsked-1].giveAllCards(ofRank: randomRank)
+                        for card in cards {
+                            players[currentPlayerIndex].addCard(card: card)
+                        //gfmodel
+                        }
+
+
                     } else {
                         players[playerAsked-1].gfModel?.noCard(randomRank)
+                        if let card = deck.dealCard(){
+                            players[currentPlayerIndex].addCard(card: card)
+                            //gfmodel function
+                        }
+
                     }
 
                 }
@@ -172,8 +184,13 @@ class Game: ObservableObject {
                         // Assuming hasCard and noCard are methods of gfModel that mutate its state
                         if player1.hasCard(ofRank: askPile.cards[0].rank) {
                             player1.gfModel?.hasCard(askPile.cards[0].rank)
+
+
                         } else {
                             player1.gfModel?.noCard(askPile.cards[0].rank)
+
+                            }
+
                         }
                     }
                     players[index] = player1 // Re-assign player1 back to the array to apply the changes
@@ -181,6 +198,7 @@ class Game: ObservableObject {
             }
 
             let cards = player.giveAllCards(ofRank: askPile.cards[0].rank)
+            // gfmodel function
 
             if !askPile.cards.isEmpty {
                 for var card in cards {
