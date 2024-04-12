@@ -51,7 +51,7 @@ class Game: ObservableObject {
             players[currentPlayerIndex].gfModel?.goRandom()
             modelAsks(currentPlayerIndex)
         }
-
+        
     }
 
 
@@ -146,15 +146,15 @@ class Game: ObservableObject {
                             players[currentPlayerIndex].addCard(card: card)
                         //gfmodel
                         }
-
-
+                        
+                        
                     } else {
                         players[playerAsked-1].gfModel?.noCard(randomRank)
                         if let card = deck.dealCard(){
                             players[currentPlayerIndex].addCard(card: card)
                             //gfmodel function
                         }
-
+                        
                     }
 
                 }
@@ -163,9 +163,9 @@ class Game: ObservableObject {
                     player.gfModel?.playerAskedRank(playerAsked)
                 }
             }
-
+                
         }
-
+        
     }
 
 
@@ -184,12 +184,10 @@ class Game: ObservableObject {
                         // Assuming hasCard and noCard are methods of gfModel that mutate its state
                         if player1.hasCard(ofRank: askPile.cards[0].rank) {
                             player1.gfModel?.hasCard(askPile.cards[0].rank)
-
-
+                            
+                            
                         } else {
                             player1.gfModel?.noCard(askPile.cards[0].rank)
-
-                            }
 
                         }
                     }
@@ -198,7 +196,6 @@ class Game: ObservableObject {
             }
 
             let cards = player.giveAllCards(ofRank: askPile.cards[0].rank)
-            // gfmodel function
 
             if !askPile.cards.isEmpty {
                 for var card in cards {
@@ -225,11 +222,11 @@ class Game: ObservableObject {
             }
         }
     }
-
+    
     func ToggleFish() {
         canFish.toggle()
     }
-
+    
     func goFish() {
         dealCard()
         ToggleFish()
@@ -241,7 +238,7 @@ class Game: ObservableObject {
     }
 
     private func handleRequest(from targetPlayer: Player, to askingPlayer: Player, with card: Card) -> Bool {
-
+        
         // TODO: Implement logic to handle the card request
         // - If targetPlayer has the card, give it to askingPlayer and return true
         // - Else, askingPlayer draws a card from the deck and return false
