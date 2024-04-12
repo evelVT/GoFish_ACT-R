@@ -31,12 +31,14 @@ struct GFModel {
     let model = Model()
     var hasRank: [Rank]
     var doesNotHaveRank: [Rank]
+    var id: Int
 //    var name: String
 //    var id: Int
 //    var score = 0
     private(set) var hand: [Card] = []
 
-    init() {
+    init(id: Int) {
+        self.id = id
         self.hasRank = Array(repeating: .none, count: 3)
         self.doesNotHaveRank = Array(repeating: .none, count: 3)
         model.loadModel(fileName: "goF_model")
@@ -48,9 +50,11 @@ struct GFModel {
     //Helps with productions remember-player-asking-diff, remember-player-asked
     mutating func playerAskedRank(_ playerID: Int,  _ playerAskedID: Int, _ rank: Card.Rank) {
         //self.hasRank[playerID] = rank
+        print("Model \(self.id) listened that player \(playerID) asked from player \(playerAskedID)")
         model.modifyLastAction(slot: "playerAsking", value: playerID.description)
         model.modifyLastAction(slot: "rank", value: rank.description)
         model.modifyLastAction(slot: "playerAsked", value: playerAskedID.description)
+        model.run()
 
 
     }
@@ -58,7 +62,7 @@ struct GFModel {
     //Production: remember-player-asking-model
     mutating func playerAskedModel(_ playerID: Int, _ rank: Card.Rank){
        // self.hasRank[playerID] = rank
-        print("PlayerAskedModel called")
+        print("Model \(self.id) was asked by player \(playerID)")
         model.modifyLastAction(slot: "playerAsking", value: playerID.description)
         model.modifyLastAction(slot: "rank", value: rank.description)
         model.modifyLastAction(slot: "playerAsked", value: "model_turn")
@@ -67,18 +71,21 @@ struct GFModel {
 
     //model-is-asked-has
     mutating func hasCard(_ rank: Card.Rank){
+        print("Model \(self.id) checked and has a \(rank.description)")
         model.modifyLastAction(slot: "rank", value : rank.description)
         model.modifyLastAction(slot: "isThere", value : "yes")
     }
 
     //model-is-asked-has-no
     mutating func noCard(_ rank: Card.Rank){
+        print("Model \(self.id) checked and DOES NOT HAVE a \(rank.description)")
         model.modifyLastAction(slot: "rank", value : rank.description)
         model.modifyLastAction(slot: "isThere", value : "no")
     }
 
     //checkTurn-DiffP
     mutating func notMyTurn(){
+        print("Model \(self.id) is listening")
         model.modifyLastAction(slot:"player", value: "opponent_turn")
         model.run()
 
@@ -86,6 +93,7 @@ struct GFModel {
 
     //checkTurn-M
     mutating func myTurn(){
+        print("It's model \(self.id)'s turn")
         if let modelActionString = model.lastAction(slot: "status") {
             print(modelActionString)
         }
@@ -95,8 +103,8 @@ struct GFModel {
 
     //no-player-has
     mutating func goRandom(){
-        print("goRandom fired")
-        print(model.actionChunk())
+        print("Model \(self.id) goes random")
+        //print(model.actionChunk())
         if let modelActionString = model.lastAction(slot: "isThere") {
             print(modelActionString)
         }
@@ -106,9 +114,7 @@ struct GFModel {
 
     //random-pick
     mutating func askRandom(_ randomPlayerID: Int, _ randomRank: Card.Rank){
-        if model.lastAction(slot: "status") == "waiting"{
-            print("Model awaits for random rank and random player")
-        }
+        print("Model \(self.id) asked randomly player \(randomPlayerID) for a \(randomRank.description)")
         model.modifyLastAction(slot: "rank", value: randomRank.description )
         model.modifyLastAction(slot: "player", value: String(randomPlayerID))
 
