@@ -38,15 +38,20 @@ class Game: ObservableObject {
                     player.gfModel?.myTurn()
                     print("Model \(player.id) is notified that it is their turn")
                     //player.gfModel?.myTurn()
-                    player.gfModel?.goRandom()
-                    modelAsks(currentPlayerIndex)
+                    //player.gfModel?.goRandom()
+                    //modelAsks(currentPlayerIndex)
                     // Additional strategy calls could be placed here if necessary
                 } else {
-                    //player.gfModel?.notMyTurn()
-                    print("...")
+                    player.gfModel?.notMyTurn()
+                    //print("...")
                 }
             }
         }
+        if currentPlayerIndex != 0{
+            players[currentPlayerIndex].gfModel?.goRandom()
+            modelAsks(currentPlayerIndex)
+        }
+
     }
 
 
@@ -110,19 +115,45 @@ class Game: ObservableObject {
 
 
     func modelAsks(_ index: Int) {
+        //CHECK THAT WE DONT GET THE MODEL ASKING THEMSELVES
         var ids = [1, 2, 3, 4] // List of player IDs
 
         let removeIndex = currentPlayerIndex + 1 // Calculate index to remove
         if removeIndex < ids.count {
-            ids.remove(at: removeIndex)
+            ids.remove(at: removeIndex-1)
         }
-
+        print("Ids in function modelAsks:")
+        print(ids)
+        var playerAsked = -1
+        let card = Card(suit:Card.Suit.hearts, rank:Card.Rank.five, open:false, drag:false)
+        var randomRank = card.rank
         if let random_player_id = ids.randomElement(),
            let randomCard = players[index].hand.randomElement() {
-            let randomRank = randomCard.rank
+            playerAsked = random_player_id
+            randomRank = randomCard.rank
             // Call the askRandom method with safely unwrapped ID and rank
             players[index].gfModel?.askRandom(random_player_id, randomRank)
         }
+        let playerAskingId = removeIndex
+        for player in players{
+            if player.id != 1 && player.id != playerAskingId {
+                if player.id == playerAsked {
+                    player.gfModel?.playerAskedModel(playerAskingId, randomRank)
+                    if players[playerAsked-1].hasCard(ofRank: randomRank) {
+                        players[playerAsked-1].gfModel?.hasCard(randomRank)
+                    } else {
+                        players[playerAsked-1].gfModel?.noCard(randomRank)
+                    }
+
+                }
+                else {
+                    player.gfModel?.playerAskingRank(playerAskingId, randomRank)
+                    player.gfModel?.playerAskedRank(playerAsked)
+                }
+            }
+
+        }
+
     }
 
 
@@ -133,8 +164,8 @@ class Game: ObservableObject {
 
                 if player1.id != 1 {
                     if player1.id != player.id {
-                        player1.gfModel?.playerAskedRank(1, player.id, askPile.cards[0].rank)
-
+                        player1.gfModel?.playerAskingRank(1, askPile.cards[0].rank)
+                        player1.gfModel?.playerAskedRank(player.id)
                     } else {
                         player1.gfModel?.playerAskedModel(1, askPile.cards[0].rank)
                         print("Player 1 asked \(player1.name)")

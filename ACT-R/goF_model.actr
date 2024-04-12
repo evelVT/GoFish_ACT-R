@@ -33,6 +33,7 @@
    =goal>
      state remember-asking
    +action>
+     isa ask
      status listening
 )
 
@@ -45,11 +46,13 @@
      isa ask
      playerAsking  =player1
      rank  =askedR
-     playerAsked =player2
+     playerAsked other_model
 ==>
    =goal>
      state remember-asked
-   =action>
+     rank =askedR
+   +action>
+     isa which-asked
    +imaginal>
      isa playerHas
      player =player1
@@ -62,10 +65,10 @@
    =goal>
      isa goal
      state remember-asked
-   =action>
-     isa ask
-     player  =player2
      rank  =askedR
+   =action>
+     isa which-asked
+     playerAsked  =player2
 ==>
    =goal>
      state checkTurn
@@ -73,8 +76,9 @@
      isa playerHasNo
      player =player2
      rank  =askedR
- ; -action>
   -imaginal>
+  +action>
+     isa Turn
 )
 
 
@@ -86,9 +90,9 @@
      isa ask
      playerAsking  =player1
      rank  =askedR
-     playerAsked model_turn
+     playerAsked model
 ==>
-   +goal>
+   =goal>
      state check-rank
      rank =askedR
    +imaginal>
@@ -114,10 +118,9 @@
 ==>
    =goal>
      state checkTurn
-   ;+action>
-    ; isa response
-     ;rank =askedR
-     ;give "yes"
+   +action>
+     isa Turn
+
 )
 
 (p model-is-asked-has-no
@@ -132,10 +135,8 @@
 ==>
    =goal>
      state checkTurn
-  ; +action>
-    ; isa response
-    ; rank =askedR
-    ; give "Go_Fish"
+   +action>
+     isa Turn
 )
 
 (p checkTurn-M
@@ -164,7 +165,7 @@
      rank =seenR
      isThere  =yes
 ==>
-   +goal>
+   =goal>
      state check-if-asked
      rank =seenR
    +retrieval>
@@ -200,7 +201,7 @@
      rank  =seenR
      player =player1
 ==>
-   +goal>
+   =goal>
      state request-player
      rank =seenR
      player  =player1
@@ -214,12 +215,12 @@
      rank =seenR
      player  =player1
 ==>
-   +goal>
+   =goal>
      state check-response
      rank =seenR
    +action>
      isa request
-     rank seenR
+     rank =seenR
      player =player1
   ; +imaginal>
     ; isa round
@@ -234,16 +235,29 @@
      state check-response
      rank =seenR
    =action>
-     isa response-player
-     rank =seenR
-     give =Go-fish
-==>
-   +goal>
-     state checkTurn
-   +action>
      isa request
-     player =pile
+     rank =seenR
+     receive Go-fish
+==>
+   =goal>
+     state draw
+   +action>
+     isa getFromPile
 )
+
+(p draw-card
+  =goal>
+    isa goal
+    state draw
+  =action>
+    isa getFromPile
+==>
+  =goal>
+   state checkTurn
+  +action>
+   isa Turn
+)
+
 
 (p cards-received
    =goal>
@@ -251,12 +265,11 @@
      state check-response
      rank =seenR
    =action>
-     isa response-player
+     isa request
      rank =seenR
-     give =yes
-     number =num
+     give yes
 ==>
-   +goal>
+   =goal>
      state check-set
      rank =seenR
    +imaginal>
@@ -298,11 +311,24 @@
      needCards =num
  ==>
    =goal>
-     state check-hand
+     state making-set
    +action>
      isa makeSet
      rank =seenR
    -retrieval>
+)
+
+(p make-set
+  =goal>
+   isa goal
+   state making-set
+  =action>
+   isa makeSet
+==>
+  =goal>
+   state check-hand
+  +action>
+   isa inHand
 )
 
 (p still-need
@@ -313,9 +339,9 @@
      haveCards =num1
    =retrieval>
      isa fullSet
-     needCards =num2
+     -needCards =num1
  ==>
-   +goal>
+   =goal>
      state check-if-asked
      rank =seenR
    -retrieval>

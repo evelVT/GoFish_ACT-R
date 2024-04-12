@@ -47,16 +47,23 @@ struct GFModel {
 
     }
     //function that checks what rank player of ID playerID asked for
-    //Helps with productions remember-player-asking-diff, remember-player-asked
-    mutating func playerAskedRank(_ playerID: Int,  _ playerAskedID: Int, _ rank: Card.Rank) {
+    //production: remember-player-asking-diff
+    mutating func playerAskingRank(_ playerID: Int, _ rank: Card.Rank) {
         //self.hasRank[playerID] = rank
-        print("Model \(self.id) listened that player \(playerID) asked from player \(playerAskedID)")
+        print("Model \(self.id) listened that player \(playerID) asked.")
         model.modifyLastAction(slot: "playerAsking", value: playerID.description)
         model.modifyLastAction(slot: "rank", value: rank.description)
-        model.modifyLastAction(slot: "playerAsked", value: playerAskedID.description)
+        model.modifyLastAction(slot: "playerAsked", value: "other_model")
         model.run()
 
 
+    }
+    //production: remember-player-asked
+    mutating func playerAskedRank(_ playerAskedID: Int) {
+        //self.hasRank[playerID] = rank
+        print("Model \(self.id) listened that player \(playerAskedID) was asked.")
+        model.modifyLastAction(slot: "playerAsked", value: playerAskedID.description)
+        model.run()
     }
 
     //Production: remember-player-asking-model
@@ -65,7 +72,8 @@ struct GFModel {
         print("Model \(self.id) was asked by player \(playerID)")
         model.modifyLastAction(slot: "playerAsking", value: playerID.description)
         model.modifyLastAction(slot: "rank", value: rank.description)
-        model.modifyLastAction(slot: "playerAsked", value: "model_turn")
+        model.modifyLastAction(slot: "playerAsked", value: "model")
+        model.run()
 
     }
 
@@ -74,6 +82,7 @@ struct GFModel {
         print("Model \(self.id) checked and has a \(rank.description)")
         model.modifyLastAction(slot: "rank", value : rank.description)
         model.modifyLastAction(slot: "isThere", value : "yes")
+        model.run()
     }
 
     //model-is-asked-has-no
@@ -81,6 +90,7 @@ struct GFModel {
         print("Model \(self.id) checked and DOES NOT HAVE a \(rank.description)")
         model.modifyLastAction(slot: "rank", value : rank.description)
         model.modifyLastAction(slot: "isThere", value : "no")
+        model.run()
     }
 
     //checkTurn-DiffP
@@ -117,6 +127,7 @@ struct GFModel {
         print("Model \(self.id) asked randomly player \(randomPlayerID) for a \(randomRank.description)")
         model.modifyLastAction(slot: "rank", value: randomRank.description )
         model.modifyLastAction(slot: "player", value: String(randomPlayerID))
+        model.run()
 
     }
 
