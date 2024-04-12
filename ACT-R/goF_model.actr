@@ -150,10 +150,26 @@
    =goal>
      state check-hand
    +action>
-     isa Turn
+     isa Turn     ;this needs to be changed to inHand when no longer forcing model to go random
      isThere yes
 )
 
+(p checkTurn-M-again
+   =goal>
+     isa goal
+     state checkTurn
+     rank  =previousRank
+   =action>
+     isa Turn
+     player  model_turn
+==>
+   =goal>
+     state check-hand
+   +action>
+     isa Turn                ;; inHand
+     rank =previousRank
+     isThere yes
+)
 
 
 (p checkHand
@@ -163,7 +179,7 @@
    =action>
      isa inHand
      rank =seenR
-     isThere  =yes
+     isThere  yes
 ==>
    =goal>
      state check-if-asked
@@ -222,11 +238,6 @@
      isa request
      rank =seenR
      player =player1
-  ; +imaginal>
-    ; isa round
-    ; player =player1
-    ; rank  =seenR
-  ; -imaginal>
 )
 
 (p cards-not-received
@@ -237,6 +248,7 @@
    =action>
      isa request
      rank =seenR
+     player =player1
      receive Go-fish
 ==>
    =goal>
@@ -251,11 +263,14 @@
     state draw
   =action>
     isa getFromPile
+    rank =drawnR
 ==>
   =goal>
-   state checkTurn
+    state check-set
+    rank =drawnR
   +action>
-   isa Turn
+    isa inHand
+    rank =drawnR
 )
 
 
@@ -324,11 +339,13 @@
    state making-set
   =action>
    isa makeSet
+   rank =seenR
 ==>
   =goal>
-   state check-hand
+   state checkTurn
   +action>
-   isa inHand
+   isa Turn
+   player model_turn
 )
 
 (p still-need
@@ -342,12 +359,29 @@
      -needCards =num1
  ==>
    =goal>
-     state check-if-asked
-     rank =seenR
+     state checkTurn
+     rank  =previousRank
    -retrieval>
-   +retrieval>
-     isa playerHas
-     rank  =seenR
+   +action>
+     isa Turn
+     player model_turn
+)
+
+(p still-need-after-draw
+   =goal>
+     isa goal
+     state check-still-need
+     rank =seenR
+     haveCards =num1
+   =retrieval>
+     isa fullSet
+     -needCards =num1
+ ==>
+   =goal>
+     state checkTurn
+   -retrieval>
+   +action>
+     isa Turn
 )
 
 (p no-player-has
@@ -356,7 +390,7 @@
      state check-hand
    =action>
      isa Turn
-     players none
+     player none
 ==>
    =goal>
      state pick-random
