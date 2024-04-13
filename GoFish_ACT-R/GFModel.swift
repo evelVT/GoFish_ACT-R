@@ -13,7 +13,7 @@ struct GFModel {
 
     init(id: Int) {
         self.id = id
-
+        
         model.loadModel(fileName: "goF_model")
         model.run()
 
@@ -71,7 +71,7 @@ struct GFModel {
         print("Model \(self.id) is listening")
         model.modifyLastAction(slot:"player", value: "opponent_turn")
         model.run()
-
+        
     }
 
     //checkTurn-M and checkTurn-M-Again
@@ -83,7 +83,7 @@ struct GFModel {
         model.modifyLastAction(slot:"player", value: "model_turn")
         model.run()
     }
-
+    
 
     //no-player-has
     mutating func goRandom(){
@@ -104,7 +104,7 @@ struct GFModel {
         model.run()
 
     }
-
+    
     //cards-not-received
     mutating func answeredFish(_ askedPlayerID: Int, _ seenRank: Rank){
         print("Player \(askedPlayerID) told Model \(self.id) to Go Fish")
@@ -113,14 +113,14 @@ struct GFModel {
         model.modifyLastAction(slot: "receive", value: "Go-fish")
         model.run()
     }
-
+    
     //draw-card
     mutating func drawFromPile(_ drawnRank: Rank){
         print("Model \(self.id) draws from pile a card of rank \(drawnRank).")
         model.modifyLastAction(slot: "rank", value: drawnRank.description )
         model.run()
     }
-
+    
     //cards-received
     mutating func answeredYes(_ askedPlayerID: Int, _ seenRank: Rank){
         print("Player \(askedPlayerID) gave Model \(self.id) cards of rank \(seenRank)")
@@ -129,7 +129,7 @@ struct GFModel {
         model.modifyLastAction(slot: "receive", value: "yes")
         model.run()
     }
-
+    
     //check-set
     mutating func checkSet( _ seenRank: Rank, _ numberRank: Int){
         print("Model \(self.id) is checking if they have a set of \(seenRank)")
@@ -137,7 +137,7 @@ struct GFModel {
         model.modifyLastAction(slot: "number", value: String(numberRank))
         model.run()
     }
-
+    
     //make-set
     mutating func makeSet( _ seenRank: Rank){
         print("Model \(self.id) is making the set of \(seenRank)")
