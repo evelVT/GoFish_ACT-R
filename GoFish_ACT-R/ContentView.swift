@@ -45,7 +45,7 @@ struct CardView: View {
         .onTapGesture {
             isHovered.toggle()
             print("Mouse Click!")
-            if (card.open) {
+            if (card.open && game.currentPlayerIndex == 0) {
                 game.addAskAction(card: card)
             }
         }

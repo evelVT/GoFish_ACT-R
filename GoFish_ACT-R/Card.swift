@@ -62,7 +62,14 @@ struct Card: Equatable {
     var drag: Bool
 
     mutating func toggleOpen() {
-        open.toggle()
+        if !open {
+            open.toggle()
+        }
+    }
+    mutating func toggleClose() {
+        if open {
+            open.toggle()
+        }
     }
     mutating func toggleDrag() {
         drag.toggle()

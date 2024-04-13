@@ -116,17 +116,26 @@ class Game: ObservableObject {
         let currentPlayer = players[currentPlayerIndex]
         
         if !askPile.cards.isEmpty {
-            currentPlayer.addCardPlayer(card: askPile.removeCard())
+            var pileCard = askPile.removeCard()
+            //if user, then card open otherwise card close
+            if currentPlayer.id == 1 {
+                pileCard.toggleOpen()
+            } else {
+                pileCard.toggleClose()
+            }
+            currentPlayer.addCardPlayer(card: pileCard)
         }
         currentPlayer.removeCard(card: card)
-        askPile.addCard(card: card)
+        var pileCard = card
+        pileCard.toggleOpen()
+        askPile.addCard(card: pileCard)
         objectWillChange.send()
     }
 
 
     func modelAsks(_ index: Int) {
        // ADD USER BACK; REMOVED FOR DEBUGGING
-        var ids = [ 2, 3, 4]
+        var ids = [1, 2, 3, 4]
         let removeIndex = currentPlayerIndex + 1
         if removeIndex < ids.count + 1 {
             ids.remove(at: removeIndex-1)
@@ -146,8 +155,9 @@ class Game: ObservableObject {
             }
 
 
-            players[index].gfModel?.askRandom(random_player_id, randomRank)
+            //players[index].gfModel?.askRandom(random_player_id, randomRank)
             addAskAction(card: randomCard)
+            processAskAction(player: players[random_player_id-1]) // process asking random_player_id for the rank of card on askPile
 
         }
         let playerAskingId = removeIndex
@@ -200,7 +210,7 @@ class Game: ObservableObject {
             }
 
         }
-
+        //nextPlayer()
     }
 
 
@@ -240,7 +250,7 @@ class Game: ObservableObject {
                     askPile.addCard(card: card)
                     objectWillChange.send()
                 }
-                if askPile.cards.count > 1 {
+                if askPile.cards.count > 1 || currentPlayerIndex != 0 {
                     let seconds = 1.5
                     DispatchQueue.main.asyncAfter(deadline: .now() + seconds) { [self] in
                         for _ in self.askPile.cards {
@@ -251,7 +261,9 @@ class Game: ObservableObject {
                     }
                 } else {
                     players[currentPlayerIndex].addCardPlayer(card: askPile.removeCard())
-                    ToggleFish()
+                    if currentPlayerIndex == 0 {
+                        ToggleFish()
+                    }
                     objectWillChange.send()
                 }
             } else {
