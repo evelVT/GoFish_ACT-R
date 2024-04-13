@@ -11,12 +11,24 @@ class Player: ObservableObject, Identifiable {
     init(id: Int, name: String) {
         self.id = id
         self.name = name
-        if id != 1{
-            self.gfModel = GFModel()
+        if id != 1  {
+            self.gfModel = GFModel(id: id)
+
         }
+
     }
     func emptyHand() {
         hand.removeAll()
+    }
+
+    func addCardPlayer(card: Card) {
+        print("\(name) receives card!")
+        hand.append(card)
+        sortHand()
+        objectWillChange.send()
+        print("\(name) now has \(hand.count) cards!")
+        print("Check for books in \(name)'s hand!")
+        score += checkForBooks()
     }
 
     func addCard(card: Card) {
@@ -25,8 +37,17 @@ class Player: ObservableObject, Identifiable {
         sortHand()
         objectWillChange.send()
         print("\(name) now has \(hand.count) cards!")
+    }
+
+    func makeSets() {
         print("Check for books in \(name)'s hand!")
         score += checkForBooks()
+    }
+
+    func giveNoCards(ofRank rank: Card.Rank) -> Int {
+        let matchingCards = hand.filter { $0.rank == rank }
+        let num = matchingCards.count
+        return num
     }
 
     func removeCard(card: Card) {
@@ -83,8 +104,6 @@ class Player: ObservableObject, Identifiable {
 
         return booksCount
     }
-
-
 
 
 }

@@ -33,6 +33,7 @@ struct Card: Equatable {
             }
         }
     }
+
     let suit: Suit
     let rank: Rank
     var open: Bool
