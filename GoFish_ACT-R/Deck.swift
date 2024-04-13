@@ -20,8 +20,8 @@ struct Deck {
 
     mutating func initializeDeck() {
         cards = [] // only keep this if we want it to reset the deck
-        for suit in Card.Suit.allCases {
-            for rank in Card.Rank.allCases {
+        for suit in Suit.allCases {
+            for rank in Rank.allCases {
                 cards.append(Card(suit: suit, rank: rank, open:false, drag:false))
             }
         }

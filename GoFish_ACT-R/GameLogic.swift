@@ -125,29 +125,30 @@ class Game: ObservableObject {
 
 
     func modelAsks(_ index: Int) {
-       
-        var ids = [1, 2, 3, 4] // List of player IDs
-
-        let removeIndex = currentPlayerIndex + 1 // Calculate index to remove
-       
+       // ADD USER BACK; REMOVED FOR DEBUGGING
+        var ids = [ 2, 3, 4]
+        let removeIndex = currentPlayerIndex + 1
         if removeIndex < ids.count + 1 {
             ids.remove(at: removeIndex-1)
         }
         var playerAsked = -1
-        var card = Card(suit:Card.Suit.hearts, rank:Card.Rank.five, open:false, drag:false)
-        var randomRank = card.rank
+        //var card = Card(suit:Card.Suit.hearts, rank:Card.Rank.five, open:false, drag:false)
+        var randomRank = Rank.five
         if let random_player_id = ids.randomElement(),
            let randomCard = players[index].hand.randomElement() {
             playerAsked = random_player_id
             if repeatPlayer == 1 && previousRank != "zero"{
-                card = getRankFromStr(rankStr: previousRank)
-                randomRank = card.rank
+                //card = getRankFromStr(rankStr: previousRank)
+                //randomRank = card.rank
+                randomRank = Rank.from(string: previousRank)
             }else{
                 randomRank = randomCard.rank
             }
-            
-            // Call the askRandom method with safely unwrapped ID and rank
+
+
             players[index].gfModel?.askRandom(random_player_id, randomRank)
+            addAskAction(card: randomCard)
+
         }
         let playerAskingId = removeIndex
         for player in players{
@@ -171,12 +172,13 @@ class Game: ObservableObject {
                             previousRank = randomRank.description
                         }
                         repeatPlayer = 1
-                        
+
                     } else {
                         players[playerAsked-1].gfModel?.noCard(randomRank)
                         players[index].gfModel?.answeredFish(playerAsked, randomRank)
-                        players[index].gfModel?.drawFromPile(randomRank)
+                        //players[index].gfModel?.drawFromPile(randomRank) //HAVE TO CHANGE
                         if let card = deck.dealCard(){
+                            players[index].gfModel?.drawFromPile(card.rank)
                             players[index].addCard(card: card)
                             let numR = players[index].giveNoCards(ofRank: card.rank)
                             players[index].gfModel?.checkSet(card.rank, numR)
@@ -187,7 +189,7 @@ class Game: ObservableObject {
                         }
                         repeatPlayer = 0
                         previousRank = "zero"
-                        
+
                     }
 
                 }
@@ -196,29 +198,12 @@ class Game: ObservableObject {
                     player.gfModel?.playerAskedRank(playerAsked)
                 }
             }
-                
+
         }
-        
+
     }
-    
-    func getRankFromStr(rankStr: String) -> Card{
-        switch rankStr{
-        case "two": return Card(suit:Card.Suit.hearts, rank:Card.Rank.two, open:false, drag:false)
-        case "three": return Card(suit:Card.Suit.hearts, rank:Card.Rank.three, open:false, drag:false)
-        case "four": return Card(suit:Card.Suit.hearts, rank:Card.Rank.four, open:false, drag:false)
-        case "five": return Card(suit:Card.Suit.hearts, rank:Card.Rank.five, open:false, drag:false)
-        case "six": return Card(suit:Card.Suit.hearts, rank:Card.Rank.six, open:false, drag:false)
-        case "seven": return Card(suit:Card.Suit.hearts, rank:Card.Rank.seven, open:false, drag:false)
-        case "eight": return Card(suit:Card.Suit.hearts, rank:Card.Rank.eight, open:false, drag:false)
-        case "nine": return Card(suit:Card.Suit.hearts, rank:Card.Rank.nine, open:false, drag:false)
-        case "ten": return Card(suit:Card.Suit.hearts, rank:Card.Rank.ten, open:false, drag:false)
-        case "jack": return Card(suit:Card.Suit.hearts, rank:Card.Rank.jack, open:false, drag:false)
-        case "queen": return Card(suit:Card.Suit.hearts, rank:Card.Rank.queen, open:false, drag:false)
-        case "king": return Card(suit:Card.Suit.hearts, rank:Card.Rank.king, open:false, drag:false)
-        case "ace": return Card(suit:Card.Suit.hearts, rank:Card.Rank.ace, open:false, drag:false)
-        default:  return Card(suit:Card.Suit.spades, rank:Card.Rank.ace, open:false, drag:false)
-        }
-    }
+
+
 
     func processAskAction(player: Player) {
         if !askPile.cards.isEmpty {

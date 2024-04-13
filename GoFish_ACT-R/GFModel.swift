@@ -2,35 +2,9 @@ import SwiftUI
 
 
 
-enum Rank: Int, CaseIterable, CustomStringConvertible {
-    case none = 0 // Represents the initial state where the rank is unknown
-    case two = 2, three, four, five, six, seven, eight, nine, ten
-    case jack, queen, king, ace
-
-    var description: String {
-        switch self {
-        case .none: return "none"
-        case .two: return "two"
-        case .three: return "three"
-        case .four: return "four"
-        case .five: return "five"
-        case .six: return "six"
-        case .seven: return "seven"
-        case .eight: return "eight"
-        case .nine: return "nine"
-        case .ten: return "ten"
-        case .jack: return "jack"
-        case .queen: return "queen"
-        case .king: return "king"
-        case .ace: return "ace"
-        }
-    }
-}
-
 struct GFModel {
     let model = Model()
-    var hasRank: [Rank]
-    var doesNotHaveRank: [Rank]
+
     var id: Int
 //    var name: String
 //    var id: Int
@@ -39,8 +13,7 @@ struct GFModel {
 
     init(id: Int) {
         self.id = id
-        self.hasRank = Array(repeating: .none, count: 3)
-        self.doesNotHaveRank = Array(repeating: .none, count: 3)
+
         model.loadModel(fileName: "goF_model")
         model.run()
 
@@ -48,7 +21,7 @@ struct GFModel {
     }
     //function that checks what rank player of ID playerID asked for
     //production: remember-player-asking-diff
-    mutating func playerAskingRank(_ playerID: Int, _ rank: Card.Rank) {
+    mutating func playerAskingRank(_ playerID: Int, _ rank: Rank) {
         //self.hasRank[playerID] = rank
         print("Model \(self.id) listened that player \(playerID) asked.")
         model.modifyLastAction(slot: "playerAsking", value: playerID.description)
@@ -67,7 +40,7 @@ struct GFModel {
     }
 
     //Production: remember-player-asking-model
-    mutating func playerAskedModel(_ playerID: Int, _ rank: Card.Rank){
+    mutating func playerAskedModel(_ playerID: Int, _ rank: Rank){
        // self.hasRank[playerID] = rank
         print("Model \(self.id) was asked by player \(playerID)")
         model.modifyLastAction(slot: "playerAsking", value: playerID.description)
@@ -78,7 +51,7 @@ struct GFModel {
     }
 
     //model-is-asked-has
-    mutating func hasCard(_ rank: Card.Rank){
+    mutating func hasCard(_ rank: Rank){
         print("Model \(self.id) checked and has a \(rank.description)")
         model.modifyLastAction(slot: "rank", value : rank.description)
         model.modifyLastAction(slot: "isThere", value : "yes")
@@ -86,7 +59,7 @@ struct GFModel {
     }
 
     //model-is-asked-has-no
-    mutating func noCard(_ rank: Card.Rank){
+    mutating func noCard(_ rank: Rank){
         print("Model \(self.id) checked and DOES NOT HAVE a \(rank.description)")
         model.modifyLastAction(slot: "rank", value : rank.description)
         model.modifyLastAction(slot: "isThere", value : "no")
@@ -98,7 +71,7 @@ struct GFModel {
         print("Model \(self.id) is listening")
         model.modifyLastAction(slot:"player", value: "opponent_turn")
         model.run()
-        
+
     }
 
     //checkTurn-M and checkTurn-M-Again
@@ -110,7 +83,7 @@ struct GFModel {
         model.modifyLastAction(slot:"player", value: "model_turn")
         model.run()
     }
-    
+
 
     //no-player-has
     mutating func goRandom(){
@@ -124,49 +97,49 @@ struct GFModel {
     }
 
     //random-pick
-    mutating func askRandom(_ randomPlayerID: Int, _ randomRank: Card.Rank){
+    mutating func askRandom(_ randomPlayerID: Int, _ randomRank: Rank){
         print("Model \(self.id) asked randomly player \(randomPlayerID) for a \(randomRank.description)")
         model.modifyLastAction(slot: "rank", value: randomRank.description )
         model.modifyLastAction(slot: "player", value: String(randomPlayerID))
         model.run()
 
     }
-    
+
     //cards-not-received
-    mutating func answeredFish(_ askedPlayerID: Int, _ seenRank: Card.Rank){
+    mutating func answeredFish(_ askedPlayerID: Int, _ seenRank: Rank){
         print("Player \(askedPlayerID) told Model \(self.id) to Go Fish")
         model.modifyLastAction(slot: "rank", value: seenRank.description )
         model.modifyLastAction(slot: "player", value: String(askedPlayerID))
         model.modifyLastAction(slot: "receive", value: "Go-fish")
         model.run()
     }
-    
+
     //draw-card
-    mutating func drawFromPile(_ drawnRank: Card.Rank){
+    mutating func drawFromPile(_ drawnRank: Rank){
         print("Model \(self.id) draws from pile a card of rank \(drawnRank).")
         model.modifyLastAction(slot: "rank", value: drawnRank.description )
         model.run()
     }
-    
+
     //cards-received
-    mutating func answeredYes(_ askedPlayerID: Int, _ seenRank: Card.Rank){
+    mutating func answeredYes(_ askedPlayerID: Int, _ seenRank: Rank){
         print("Player \(askedPlayerID) gave Model \(self.id) cards of rank \(seenRank)")
         model.modifyLastAction(slot: "rank", value: seenRank.description )
         model.modifyLastAction(slot: "player", value: String(askedPlayerID))
         model.modifyLastAction(slot: "receive", value: "yes")
         model.run()
     }
-    
+
     //check-set
-    mutating func checkSet( _ seenRank: Card.Rank, _ numberRank: Int){
+    mutating func checkSet( _ seenRank: Rank, _ numberRank: Int){
         print("Model \(self.id) is checking if they have a set of \(seenRank)")
         model.modifyLastAction(slot: "rank", value: seenRank.description )
         model.modifyLastAction(slot: "number", value: String(numberRank))
         model.run()
     }
-    
+
     //make-set
-    mutating func makeSet( _ seenRank: Card.Rank){
+    mutating func makeSet( _ seenRank: Rank){
         print("Model \(self.id) is making the set of \(seenRank)")
         model.modifyLastAction(slot: "rank", value: seenRank.description )
         model.run()
@@ -174,7 +147,7 @@ struct GFModel {
 
     //check-hand
     //Need way to get some response from the model on whether it remembers something about the card it inspected
-    mutating func getCard(_ rank: Card.Rank){
+    mutating func getCard(_ rank: Rank){
         model.modifyLastAction(slot: "rank", value: rank.description)
         model.modifyLastAction(slot: "isThere", value: "yes")
         model.run()

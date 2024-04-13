@@ -23,7 +23,7 @@ class AskPile: ObservableObject {
 
     // Check if the pile has a card of the specified rank
     //$0 some weird shorthand for basically saying "for each card in hand, check if the rank is equal to the rank passed in"
-    func hasCard(ofRank rank: Card.Rank) -> Bool {
+    func hasCard(ofRank rank: Rank) -> Bool {
         return cards.contains { $0.rank == rank }
     }
 

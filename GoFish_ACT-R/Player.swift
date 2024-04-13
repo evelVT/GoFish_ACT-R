@@ -44,7 +44,7 @@ class Player: ObservableObject, Identifiable {
         score += checkForBooks()
     }
 
-    func giveNoCards(ofRank rank: Card.Rank) -> Int {
+    func giveNoCards(ofRank rank: Rank) -> Int {
         let matchingCards = hand.filter { $0.rank == rank }
         let num = matchingCards.count
         return num
@@ -56,7 +56,7 @@ class Player: ObservableObject, Identifiable {
 
     // Function that will be called when the player is asked for a specific rank
     // Returns all cards of the specified rank and removes them from the player's hand
-    func giveAllCards(ofRank rank: Card.Rank) -> [Card] {
+    func giveAllCards(ofRank rank: Rank) -> [Card] {
         let matchingCards = hand.filter { $0.rank == rank }
         hand = hand.filter { $0.rank != rank }
         return matchingCards
@@ -64,12 +64,12 @@ class Player: ObservableObject, Identifiable {
 
     // Check if the player has a card of the specified rank
     //$0 some weird shorthand for basically saying "for each card in hand, check if the rank is equal to the rank passed in"
-    func hasCard(ofRank rank: Card.Rank) -> Bool {
+    func hasCard(ofRank rank: Rank) -> Bool {
         return hand.contains { $0.rank == rank }
     }
 
     // Choose a rank to ask for from another player
-    func chooseCardToAskFor() -> Card.Rank? {
+    func chooseCardToAskFor() -> Rank? {
         // TODO: Implement logic to send the cards to the player who asked for them
        return nil
     }
