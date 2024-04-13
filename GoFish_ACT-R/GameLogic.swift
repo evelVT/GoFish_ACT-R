@@ -114,14 +114,13 @@ class Game: ObservableObject {
 
     func addAskAction(card: Card) {
         let currentPlayer = players[currentPlayerIndex]
-        if (currentPlayerIndex == 0) {
-            if !askPile.cards.isEmpty {
-                currentPlayer.addCardPlayer(card: askPile.removeCard())
-            }
-            currentPlayer.removeCard(card: card)
-            askPile.addCard(card: card)
-            objectWillChange.send()
+        
+        if !askPile.cards.isEmpty {
+            currentPlayer.addCardPlayer(card: askPile.removeCard())
         }
+        currentPlayer.removeCard(card: card)
+        askPile.addCard(card: card)
+        objectWillChange.send()
     }
 
 
@@ -222,7 +221,7 @@ class Game: ObservableObject {
     }
 
     func processAskAction(player: Player) {
-        if currentPlayerIndex == 0 && !askPile.cards.isEmpty {
+        if !askPile.cards.isEmpty {
             for index in players.indices {
                 let player1 = players[index]
 
