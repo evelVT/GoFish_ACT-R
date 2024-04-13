@@ -50,6 +50,11 @@ class Player: ObservableObject, Identifiable {
         return num
     }
 
+    func returnRankList() -> [Rank] {
+        let uniqueRanks = Set(hand.map { $0.rank })
+        return Array(uniqueRanks)
+    }
+
     func removeCard(card: Card) {
         hand.removeAll(where: {$0 == card})
     }

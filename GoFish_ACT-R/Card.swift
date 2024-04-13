@@ -64,16 +64,13 @@ struct Card: Equatable {
     mutating func toggleOpen() {
         if !open {
             open.toggle()
+            }
         }
-    }
     mutating func toggleClose() {
         if open {
             open.toggle()
+            }
         }
-    }
-    mutating func toggleDrag() {
-        drag.toggle()
-    }
 
     static func == (lhs: Card, rhs: Card) -> Bool {
         return lhs.suit == rhs.suit && lhs.rank == rhs.rank

@@ -194,10 +194,8 @@
      isa goal
      state check-if-asked
      rank =seenR
-   =retrieval>
-     isa playerHas
-     rank  =seenR
-     player nil
+   ?retrieval>
+     buffer failure
 ==>
    =goal>
      state checkHand
@@ -268,6 +266,7 @@
   =goal>
     state check-set
     rank =drawnR
+    status Draw
   +action>
     isa inHand
     rank =drawnR
@@ -282,11 +281,13 @@
    =action>
      isa request
      rank =seenR
-     give yes
+     player =player1
+     receive yes
 ==>
    =goal>
      state check-set
      rank =seenR
+     status Receive
    +imaginal>
      isa playerHasNo
      player =player1
@@ -302,6 +303,7 @@
      isa goal
      state check-set
      rank =seenR
+     status =value
    =action>
      isa inHand
      rank =seenR
@@ -311,6 +313,7 @@
      state check-still-need
      rank =seenR
      haveCards =num
+     status =value
    +retrieval>
      isa fullSet
 )
@@ -321,6 +324,7 @@
      state check-still-need
      rank =seenR
      haveCards =num
+     status =value
    =retrieval>
      isa fullSet
      needCards =num
@@ -353,14 +357,15 @@
      isa goal
      state check-still-need
      rank =seenR
-     haveCards =num1
+     haveCards =num
+     status Receive
    =retrieval>
      isa fullSet
-     -needCards =num1
+     - needCards =num
  ==>
    =goal>
      state checkTurn
-     rank  =previousRank
+     rank  =seenR
    -retrieval>
    +action>
      isa Turn
@@ -373,9 +378,10 @@
      state check-still-need
      rank =seenR
      haveCards =num1
+     status Draw
    =retrieval>
      isa fullSet
-     -needCards =num1
+     - needCards =num1
  ==>
    =goal>
      state checkTurn
