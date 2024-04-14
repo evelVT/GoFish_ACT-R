@@ -111,7 +111,7 @@ class Player: ObservableObject, Identifiable {
                 // This then should be showed in the view
             }
         }
-
+        
         return booksCount
     }
 

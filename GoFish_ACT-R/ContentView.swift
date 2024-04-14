@@ -196,7 +196,7 @@ struct DrawpileView: View {
                         .clipShape(RoundedRectangle(cornerRadius: 15))
                         .frame(maxHeight:200)
 
-                    Text(game.running ? (game.canFish ? "Go Fish!" : "Player \(game.currentPlayerIndex+1) \nplaying") : "New Game")
+                    Text(game.running ? (game.canFish ? "Go Fish!" : "Player \(game.currentPlayerIndex+1) \nplaying") : (game.sortedPlayers.isEmpty ? "New Game" : "Player \(game.sortedPlayers[0].id) won!\nNew game?"))
                         .foregroundStyle(.black)
                         .onHover { hover in
                             print("Mouse hover: \(hover)")

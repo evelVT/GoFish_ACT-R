@@ -11,6 +11,7 @@ class Game: ObservableObject {
     var repeatPlayer = 0
     var previousRank = ""
     var selectedPlayer = -1
+    var sortedPlayers: [Player] = []
 
     init(playerIds: [Int]) {
         // Initialize players
@@ -83,6 +84,7 @@ class Game: ObservableObject {
                         //card.toggleDrag()
                     }
                     player.addCardPlayer(card: card)
+                    checkGameEndConditions()
                     objectWillChange.send()
                 }
             }
@@ -97,6 +99,7 @@ class Game: ObservableObject {
                 card.toggleOpen()
             }
             currentPlayer.addCardPlayer(card: card)
+            checkGameEndConditions()
             objectWillChange.send()
         }
     }
@@ -225,6 +228,7 @@ class Game: ObservableObject {
                                 if numR == 4 {
                                     players[currentPlayerIndex].gfModel?.makeSet(selectedRank)
                                     players[currentPlayerIndex].makeSets()
+                                    checkGameEndConditions()
                                     previousRank = "zero"
                                 }else{
                                     previousRank = selectedRank.description
@@ -245,6 +249,7 @@ class Game: ObservableObject {
                                 if numR == 4 {
                                     players[currentPlayerIndex].gfModel?.makeSet(card.rank)
                                     players[currentPlayerIndex].makeSets()
+                                    checkGameEndConditions()
                                 }
                             }
                             repeatPlayer = 0
@@ -302,11 +307,13 @@ class Game: ObservableObject {
                         DispatchQueue.main.asyncAfter(deadline: .now() + 2) { [self] in
                             for _ in askPile.cards {
                                 players[0].addCardPlayer(card: askPile.removeCard())
+                                checkGameEndConditions()
                                 objectWillChange.send()
                             }
                         }
                     } else {
                         players[0].addCardPlayer(card: askPile.removeCard())
+                        checkGameEndConditions()
                         if currentPlayerIndex == 0 {
                             ToggleFish()
                         }
@@ -354,8 +361,28 @@ class Game: ObservableObject {
 //    }
 
     private func checkGameEndConditions() {
-        // TODO: Implement logic to check if all players have no cards left
-        // - If the game has ended, determine the winner or handle the end of the game
+        var cardsInPlay = 0
+        for player in players {
+            cardsInPlay += player.hand.count
+        }
+        if cardsInPlay == 0 {
+            if deck.cards.count > 0 {
+                print("ERROR: game end while deck not empty!")
+            }
+            running.toggle()
+            sortPlayers()
+        }
+    }
+    
+    // Sort players based on score in sortedPlayers array (highest to lowest)
+    private func sortPlayers() {
+        sortedPlayers = players.sorted { (lhs, rhs) in
+            if lhs.score == rhs.score { // <1>
+                return lhs.id > rhs.id
+            }
+            
+            return lhs.score > rhs.score // <2>
+        }
     }
 }
 
