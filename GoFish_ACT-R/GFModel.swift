@@ -4,16 +4,11 @@ import SwiftUI
 
 struct GFModel {
     let model = Model()
-
     var id: Int
-//    var name: String
-//    var id: Int
-//    var score = 0
     private(set) var hand: [Card] = []
 
     init(id: Int) {
         self.id = id
-        
         model.loadModel(fileName: "goF_model")
         model.run()
 
@@ -93,6 +88,7 @@ struct GFModel {
             print(modelActionString)
         }
         model.modifyLastAction(slot: "player", value: "none")
+        model.modifyLastAction(slot: "retrieved", value: "no")
         model.run()
     }
 
@@ -104,7 +100,7 @@ struct GFModel {
         model.run()
 
     }
-    
+
     //cards-not-received
     mutating func answeredFish(_ askedPlayerID: Int, _ seenRank: Rank){
         print("Player \(askedPlayerID) told Model \(self.id) to Go Fish")
@@ -114,14 +110,14 @@ struct GFModel {
         model.modifyLastAction(slot: "retrieved", value: "yes")
         model.run()
     }
-    
+
     //draw-card
     mutating func drawFromPile(_ drawnRank: Rank){
         print("Model \(self.id) draws from pile a card of rank \(drawnRank).")
         model.modifyLastAction(slot: "rank", value: drawnRank.description )
         model.run()
     }
-    
+
     //cards-received
     mutating func answeredYes(_ askedPlayerID: Int, _ seenRank: Rank){
         print("Player \(askedPlayerID) gave Model \(self.id) cards of rank \(seenRank)")
@@ -131,7 +127,7 @@ struct GFModel {
         model.modifyLastAction(slot: "retrieved", value: "yes")
         model.run()
     }
-    
+
     //check-set
     mutating func checkSet( _ seenRank: Rank, _ numR: Int){
         print("Model \(self.id) is checking if they have a set of \(seenRank)")
@@ -144,7 +140,7 @@ struct GFModel {
         model.modifyLastAction(slot: "number", value: numberRank)
         model.run()
     }
-    
+
     //make-set
     mutating func makeSet( _ seenRank: Rank){
         print("Model \(self.id) is making the set of \(seenRank)")
@@ -153,7 +149,6 @@ struct GFModel {
     }
 
     //check-hand
-    //Need way to get some response from the model on whether it remembers something about the card it inspected
     mutating func getCard(_ rank: Rank){
         print("Model \(self.id) is checking for a memory of rank \(rank)")
         model.modifyLastAction(slot: "rank", value: rank.description)
@@ -161,23 +156,19 @@ struct GFModel {
         model.modifyLastAction(slot: "retrieved", value: "no")
         model.run()
     }
-    
-    func findPlayerMemory() -> String?{
+
+    func findPlayerMemory() -> String{
        print("Model \(self.id) tries to remember a player with the same rank.")
        //print(model.actionChunk())
-        let modelActionString = model.lastAction(slot: "retrieved")
-        print(modelActionString)
-        if modelActionString == "yes" {
-            return model.lastAction(slot: "player")!
-        }else{
-            return modelActionString
+        if let modelActionString = model.lastAction(slot: "retrieved"){
+            print(modelActionString)
+            if modelActionString == "yes" {
+                return model.lastAction(slot: "player")!
+            }else{
+                return modelActionString
+            }
         }
+       return "noRetrieved"
    }
 
-
-    //TODO:
-    // -asking for the card
-    // -handling the response -- taking the card / drawing a card
-    // - check-set and no-need which are about making a set i presume
-    // - tie these to the GameLogic
 }

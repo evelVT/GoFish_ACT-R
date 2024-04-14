@@ -185,6 +185,7 @@
    =goal>
      state check-if-asked
      rank =seenR
+  ; =action>
    +retrieval>
      isa playerHas
      rank  =seenR
@@ -196,14 +197,15 @@
      state check-if-asked
      rank =seenR
    ?retrieval>
-     buffer failure
+     state error
 ==>
    =goal>
-     state checkHand
+     state check-hand
+   ;-retrieval>
    +action>
      isa inHand
-     rank =seenR
-     isThere yes
+     ;rank =seenR
+     ;isThere yes
      retrieved no
 )
 
@@ -401,7 +403,8 @@
      isa goal
      state check-hand
    =action>
-     isa Turn
+     isa inHand
+     retrieved no
      player none
 ==>
    =goal>
@@ -425,6 +428,8 @@
      player  =randomP
    ;-action>
 )
+
+
 
 (goal-focus goal)
 

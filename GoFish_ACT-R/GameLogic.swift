@@ -12,7 +12,7 @@ class Game: ObservableObject {
     var previousRank = ""
     var selectedPlayer = -1
     var sortedPlayers: [Player] = []
-
+    var currentGameNumber = -1
     init(playerIds: [Int]) {
         // Initialize players
         for id in playerIds {
@@ -22,8 +22,17 @@ class Game: ObservableObject {
     }
 
     func startNew() {
+        currentGameNumber = currentGameNumber + 1
         for player in players {
             player.emptyHand()
+        }
+        if currentGameNumber > 0 {
+            players = []
+            let ids = [1,2,3,4]
+            for id in ids {
+                let player = Player(id: id, name: "Player \(id)")
+                players.append(player)
+            }
         }
         running.toggle()
         deck.initializeDeck()
@@ -57,9 +66,9 @@ class Game: ObservableObject {
             }
         }
         if currentPlayerIndex != 0{
-            modelAsks(currentPlayerIndex)
+            handleModelTurn(currentPlayerIndex)
         }
-        
+
     }
 
 
@@ -112,41 +121,40 @@ class Game: ObservableObject {
 
     }
     func samePlayer() {
-       // currentPlayerIndex = (currentPlayerIndex+1) % players.count
-       // objectWillChange.send()
+        // currentPlayerIndex = (currentPlayerIndex+1) % players.count
+        // objectWillChange.send()
         print("Current player index: \(currentPlayerIndex)")
         notifyModels()
 
     }
 
     func addAskAction(card: Card) {
-            let currentPlayer = players[currentPlayerIndex]
-            
-            if !askPile.cards.isEmpty {
-                var pileCard = askPile.removeCard()
-                //if user, then card open otherwise card close
-                if currentPlayer.id == 1 {
-                    pileCard.toggleOpen()
-                } else {
-                    pileCard.toggleClose()
-                }
-                currentPlayer.addCard(card: pileCard)
+        let currentPlayer = players[currentPlayerIndex]
+
+        if !askPile.cards.isEmpty {
+            var pileCard = askPile.removeCard()
+            //if user, then card open otherwise card close
+            if currentPlayer.id == 1 {
+                pileCard.toggleOpen()
+            } else {
+                pileCard.toggleClose()
             }
-            currentPlayer.removeCard(card: card)
-            var pileCard = card
-            pileCard.toggleOpen()
-            askPile.addCard(card: pileCard)
-            objectWillChange.send()
+            currentPlayer.addCard(card: pileCard)
         }
+        currentPlayer.removeCard(card: card)
+        var pileCard = card
+        pileCard.toggleOpen()
+        askPile.addCard(card: pileCard)
+        objectWillChange.send()
+    }
 
 
-    func modelAsks(_ index: Int) {
-       
+    func handleModelTurn(_ index: Int) {
+
         var ids = [1, 2, 3, 4]
         let removeIndex = currentPlayerIndex + 1
         if removeIndex < ids.count + 1 {
             ids.remove(at: removeIndex-1)
-            ids.remove(at:0) //ADDED FOR DEBUGGING, REMOVE LATER
         }
         var playerAsked = -1
         var ranksInHand = players[currentPlayerIndex].returnRankList()
@@ -155,12 +163,13 @@ class Game: ObservableObject {
         var selectedRank = ranksInHand[0]
         var selectedCard = players[currentPlayerIndex].giveOneCard(ofRank: selectedRank)
         if repeatPlayer == 1 && previousRank != "zero"{
-           selectedRank = Rank.from(string: previousRank)
-           selectedCard = players[currentPlayerIndex].giveOneCard(ofRank: selectedRank)
-           players[currentPlayerIndex].gfModel?.getCard(selectedRank)
-           let string_player_id = players[currentPlayerIndex].gfModel?.findPlayerMemory()
-           if string_player_id != "no"{
-                selected_player_id = Int(string_player_id!)!
+            selectedRank = Rank.from(string: previousRank)
+            selectedCard = players[currentPlayerIndex].giveOneCard(ofRank: selectedRank)
+            players[currentPlayerIndex].gfModel?.getCard(selectedRank)
+            if let string_player_id = players[currentPlayerIndex].gfModel?.findPlayerMemory(){
+                if string_player_id != "no" && string_player_id != "noRetrieved"{
+                    print(string_player_id)
+                    selected_player_id = Int(Double(string_player_id)!)                }
             }
         }
         if selected_player_id == -1{
@@ -169,36 +178,42 @@ class Game: ObservableObject {
                     continue
                 }
                 selectedCard = players[currentPlayerIndex].giveOneCard(ofRank: selectedRank)
-                let string_player_id = players[currentPlayerIndex].gfModel?.findPlayerMemory()
-                if string_player_id != "no"{
-                    selected_player_id = Int(string_player_id!)!
-                    selectedRank = rank
-                    break
-                }
+                players[currentPlayerIndex].gfModel?.getCard(rank)
+                if let string_player_id = players[currentPlayerIndex].gfModel?.findPlayerMemory(){
+                    if string_player_id != "no" && string_player_id != "noRetrieved"{
+                        print(string_player_id)
+                        selected_player_id = Int(Double(string_player_id)!)
+                        selectedRank = rank
+                        break
+                    }                }
+
             }
         }
-        
+
         if selected_player_id == -1{
             players[currentPlayerIndex].gfModel?.goRandom()
-            if selected_player_id == ids.randomElement() &&
-                selectedCard == players[currentPlayerIndex].hand.randomElement() {
-                playerAsked = selected_player_id
-                selectedRank = selectedCard.rank
-                }
-                players[currentPlayerIndex].gfModel?.askRandom(selected_player_id, selectedRank)
-        }else{
-            
+            selected_player_id = ids.randomElement()!
+            selectedCard = players[currentPlayerIndex].hand.randomElement()!
             playerAsked = selected_player_id
-            
-            
+            selectedRank = selectedCard.rank
+
+            players[currentPlayerIndex].gfModel?.askRandom(playerAsked, selectedRank)
+        }else{
+            print("Player \(currentPlayerIndex+1) remembered that player \(selected_player_id) has a \(selectedRank)")
+            selectedCard = players[currentPlayerIndex].giveOneCard(ofRank: selectedRank)
+            print("He is putting down a \(selectedCard.rank) of \(selectedCard.suit)")
+            playerAsked = selected_player_id
+
+
         }
-            addAskAction(card: selectedCard)
-            
+        addAskAction(card: selectedCard)
+        selectedPlayer = playerAsked
+        objectWillChange.send()
         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
             [self] in
             let playerAskingId = removeIndex
             for player in players{
-                if player.id != 1 && player.id != playerAskingId {
+                if player.id != playerAskingId {
                     if player.id == playerAsked {
                         players[playerAsked-1].gfModel?.playerAskedModel(playerAskingId, selectedRank)
                         if players[playerAsked-1].hasCard(ofRank: selectedRank) {
@@ -213,12 +228,14 @@ class Game: ObservableObject {
                                         card.toggleOpen()
                                         askPile.addCard(card: card)
                                         objectWillChange.send()
-                                            DispatchQueue.main.asyncAfter(deadline: .now() + 2) { [self] in
-                                                for _ in askPile.cards {
-                                                    players[currentPlayerIndex].addCard(card: askPile.removeCard())
-                                                    objectWillChange.send()
-                                                }
+                                        DispatchQueue.main.asyncAfter(deadline: .now() + 2) { [self] in
+                                            for _ in askPile.cards {
+                                                players[currentPlayerIndex].addCard(card: askPile.removeCard())
+                                                objectWillChange.send()
                                             }
+                                            selectedPlayer = -1
+                                            objectWillChange.send()
+                                        }
                                     }
                                 }
                             }
@@ -235,11 +252,12 @@ class Game: ObservableObject {
                                 }
                                 repeatPlayer = 1
                             }
-                            
+
                         } else {
                             players[playerAsked-1].gfModel?.noCard(selectedRank)
                             players[currentPlayerIndex].gfModel?.answeredFish(playerAsked, selectedRank)
                             players[currentPlayerIndex].addCard(card: askPile.removeCard())
+                            selectedPlayer = -1
                             objectWillChange.send()
                             if let card = deck.dealCard(){
                                 players[currentPlayerIndex].gfModel?.drawFromPile(card.rank)
@@ -254,7 +272,7 @@ class Game: ObservableObject {
                             }
                             repeatPlayer = 0
                             previousRank = "zero"
-                            
+
                         }
 
                     }
@@ -263,15 +281,16 @@ class Game: ObservableObject {
                         player.gfModel?.playerAskedRank(playerAsked)
                     }
                 }
-                    
+
             }
         }
     }
-      
-    
 
-    func processAskAction(player: Player) {
+
+
+    func processAskActionUser(player: Player) {
         selectedPlayer = player.id
+        objectWillChange.send()
         if !askPile.cards.isEmpty {
             for index in players.indices {
                 if players[index].id != 1 {
@@ -327,17 +346,17 @@ class Game: ObservableObject {
         selectedPlayer = -1
         objectWillChange.send()
     }
-    
+
     func ToggleFish() {
         canFish.toggle()
     }
-    
+
     func goFish() {
         dealCard()
         ToggleFish()
         nextPlayer()
     }
-    
+
     func changeTurn(){
         if repeatPlayer == 1 {
             print("same player!")
@@ -348,17 +367,6 @@ class Game: ObservableObject {
         }
     }
 
-    private func choosePlayerToAsk(targetedBy askingPlayer: Player) -> Player? {
-        return players.first(where: { $0 !== askingPlayer })
-    }
-
-//    private func handleRequest(from targetPlayer: Player, to askingPlayer: Player, with card: Card) -> Bool {
-//        
-//        // TODO: Implement logic to handle the card request
-//        // - If targetPlayer has the card, give it to askingPlayer and return true
-//        // - Else, askingPlayer draws a card from the deck and return false
-//        return false
-//    }
 
     private func checkGameEndConditions() {
         var cardsInPlay = 0
