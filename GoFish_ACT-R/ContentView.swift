@@ -196,7 +196,7 @@ struct DrawpileView: View {
                         .clipShape(RoundedRectangle(cornerRadius: 15))
                         .frame(maxHeight:200)
 
-                    Text(game.running ? (game.canFish ? "Go Fish!" : "Player \(game.currentPlayerIndex+1) \nplaying") : (game.sortedPlayers.isEmpty ? "New Game" : "Player \(game.sortedPlayers[0].id) won!\nNew game?"))
+                    Text(game.running ? (game.canFish || (game.currentPlayerIndex == 0 && game.players[0].hand.isEmpty) ? "Go Fish!" : "Player \(game.currentPlayerIndex+1) \nplaying") : (game.sortedPlayers.isEmpty ? "New Game" : "Player \(game.sortedPlayers[0].id) won!\nNew game?"))
                         .foregroundStyle(.black)
                         .onHover { hover in
                             print("Mouse hover: \(hover)")
@@ -227,11 +227,13 @@ struct DrawpileView: View {
                                 print("Mouse hover: \(hover)")
                                 hoverEl1 = hover
                             }
-                        if game.askPile.cards.count >= 3 {
-                            CardView(game: game, card: game.askPile.cards[2])
-                        }
-                        if game.askPile.cards.count >= 4 {
-                            CardView(game: game, card: game.askPile.cards[3])
+                        HStack {
+                            if game.askPile.cards.count >= 3 {
+                                CardView(game: game, card: game.askPile.cards[2])
+                            }
+                            if game.askPile.cards.count >= 4 {
+                                CardView(game: game, card: game.askPile.cards[3])
+                            }
                         }
                     }
                 }
@@ -240,14 +242,13 @@ struct DrawpileView: View {
         }
     }
     func pileAction() {
-        game.running ? (game.canFish ? game.goFish() : nil ) : game.startNew()
+        game.running ? (game.canFish ? game.goFish() : (game.currentPlayerIndex == 0 && game.players[0].hand.isEmpty ? game.goFish() : nil )) : game.startNew()
     }
     func nextPlayer() {
         game.changeTurn()
     }
 }
 
-//NEED GAMEOBJECT TO HOLD GAME VARIABLES
 
 
 // Game View
@@ -284,7 +285,7 @@ struct GameView: View {
 
     }
     func processAsk(player: Player) {
-        game.processAskAction(player: player)
+        game.processAskActionUser(player: player)
     }
 }
 

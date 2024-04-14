@@ -251,6 +251,7 @@ class Game: ObservableObject {
                                     previousRank = selectedRank.description
                                 }
                                 repeatPlayer = 1
+                                changeTurn()
                             }
 
                         } else {
@@ -272,6 +273,8 @@ class Game: ObservableObject {
                             }
                             repeatPlayer = 0
                             previousRank = "zero"
+                            changeTurn()
+                            objectWillChange.send()
 
                         }
 
