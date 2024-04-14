@@ -32,8 +32,7 @@ struct CardView: View {
                             .foregroundColor(card.suit == .hearts || card.suit == .diamonds ? .red : .black)
                 }
                 HStack {
-                    Text(card.open ? card.suit.rawValue.description : "")
-                        .font(.system(size: 3 * cardScale))
+                    Image(systemName: card.suit == .hearts ? "suit.heart.fill" : (card.suit == .diamonds ? "suit.diamond.fill" : (card.suit == .clubs ? "suit.club.fill" : "suit.spade.fill")))
                         .foregroundColor(card.suit == .hearts || card.suit == .diamonds ? .red : .black)
                 }
             }
@@ -78,7 +77,7 @@ struct OpponentView: View {
         ZStack {
             RoundedRectangle(cornerRadius: 15)
                 .strokeBorder(Color.red.opacity(game.currentPlayerIndex+1 == player.id ? 1.0 : 0.0), lineWidth: 3)
-                .background(Color(red: 0.349, green: 0.416, blue: 1))
+                .background(game.selectedPlayer == player.id ? Color.red : Color(red: 0.349, green: 0.416, blue: 1))
                 .clipShape(RoundedRectangle(cornerRadius: 15))
                 .frame(maxHeight:300)
             VStack {
@@ -125,7 +124,7 @@ struct PlayerView: View {
         ZStack(alignment:.bottom) {
             RoundedRectangle(cornerRadius: 15)
                 .strokeBorder(Color.red.opacity(game.currentPlayerIndex+1 == player.id ? 1.0 : 0.0), lineWidth: 3)
-                .background(Color(red: 0.349, green: 0.416, blue: 1))
+                .background(game.selectedPlayer == player.id ? Color.red : Color(red: 0.349, green: 0.416, blue: 1))
                 .clipShape(RoundedRectangle(cornerRadius: 15))
                 .frame(maxHeight:200)
             VStack {
@@ -214,24 +213,26 @@ struct DrawpileView: View {
                         .background(Color.red.opacity(hoverEl1 ? 0.5 : 1))
                         .clipShape(RoundedRectangle(cornerRadius: 15))
                         .frame(maxHeight:200)
-
-                    Text(game.currentPlayerIndex == 0 ? "Ask Pile" : "X")
-                        .foregroundStyle(.black)
-                        .onHover { hover in
-                            print("Mouse hover: \(hover)")
-                            hoverEl1 = hover
-                        }
                     VStack {
-                        // hand
-                        ScrollView(.horizontal, showsIndicators: false) {
-                            HStack(alignment:.top) {
-                                ForEach(game.askPile.cards.indices, id: \.self) { index in
-                                    CardView(game:game, card: game.askPile.cards[index])
-                                        .zIndex(1)
-                                }
+                        HStack {
+                            if game.askPile.cards.count >= 1 {
+                                CardView(game: game, card: game.askPile.cards[0])
                             }
+                            if game.askPile.cards.count >= 2 {
+                                CardView(game: game, card: game.askPile.cards[1])
+                            }                        }
+                        Text("Ask Pile")
+                            .foregroundStyle(.black)
+                            .onHover { hover in
+                                print("Mouse hover: \(hover)")
+                                hoverEl1 = hover
+                            }
+                        if game.askPile.cards.count >= 3 {
+                            CardView(game: game, card: game.askPile.cards[2])
                         }
-                        .scrollClipDisabled()
+                        if game.askPile.cards.count >= 4 {
+                            CardView(game: game, card: game.askPile.cards[3])
+                        }
                     }
                 }
                 .padding()

@@ -10,6 +10,7 @@ class Game: ObservableObject {
     var canFish = false
     var repeatPlayer = 0
     var previousRank = ""
+    var selectedPlayer = -1
 
     init(playerIds: [Int]) {
         // Initialize players
@@ -265,6 +266,7 @@ class Game: ObservableObject {
     
 
     func processAskAction(player: Player) {
+        selectedPlayer = player.id
         if !askPile.cards.isEmpty {
             for index in players.indices {
                 if players[index].id != 1 {
@@ -315,6 +317,8 @@ class Game: ObservableObject {
                 print("ERROR NO CARD SELECTED IN ASKPILE")
             }
         }
+        selectedPlayer = -1
+        objectWillChange.send()
     }
     
     func ToggleFish() {
