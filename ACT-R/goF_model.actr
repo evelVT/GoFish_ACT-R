@@ -150,7 +150,7 @@
    =goal>
      state check-hand
    +action>
-     isa Turn     ;this needs to be changed to inHand when no longer forcing model to go random
+     isa inHand     ;this needs to be changed to inHand when no longer forcing model to go random
      isThere yes
 )
 
@@ -166,7 +166,7 @@
    =goal>
      state check-hand
    +action>
-     isa Turn                ;; inHand
+     isa inHand
      rank =previousRank
      isThere yes
 )
@@ -180,6 +180,7 @@
      isa inHand
      rank =seenR
      isThere  yes
+     retrieved no
 ==>
    =goal>
      state check-if-asked
@@ -201,9 +202,11 @@
      state checkHand
    +action>
      isa inHand
-     isThere =yes
-     checked-this-round =no
+     rank =seenR
+     isThere yes
+     retrieved no
 )
+
 
 (p rank-one-has
    =goal>
@@ -236,6 +239,7 @@
      isa request
      rank =seenR
      player =player1
+     retrieved yes
 )
 
 (p cards-not-received
@@ -247,7 +251,8 @@
      isa request
      rank =seenR
      player =player1
-     receive Go-fish
+     answer Go-fish
+     retrieved yes
 ==>
    =goal>
      state draw
@@ -282,7 +287,8 @@
      isa request
      rank =seenR
      player =player1
-     receive yes
+     answer yes
+     retrieved yes
 ==>
    =goal>
      state check-set
