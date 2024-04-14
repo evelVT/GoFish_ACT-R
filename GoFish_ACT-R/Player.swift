@@ -20,15 +20,14 @@ class Player: ObservableObject, Identifiable {
     func emptyHand() {
         hand.removeAll()
     }
-
+    
     func addCardPlayer(card: Card) {
         print("\(name) receives card!")
         hand.append(card)
         sortHand()
         objectWillChange.send()
         print("\(name) now has \(hand.count) cards!")
-        print("Check for books in \(name)'s hand!")
-        score += checkForBooks()
+        makeSets()
     }
 
     func addCard(card: Card) {
@@ -38,18 +37,24 @@ class Player: ObservableObject, Identifiable {
         objectWillChange.send()
         print("\(name) now has \(hand.count) cards!")
     }
-
+    
     func makeSets() {
         print("Check for books in \(name)'s hand!")
         score += checkForBooks()
     }
-
+    
     func giveNoCards(ofRank rank: Rank) -> Int {
         let matchingCards = hand.filter { $0.rank == rank }
         let num = matchingCards.count
         return num
     }
-
+    
+    func giveOneCard(ofRank rank: Rank) -> Card {
+        let matchingCards = hand.filter { $0.rank == rank }
+        let card = matchingCards.randomElement()!
+        return card
+    }
+    
     func returnRankList() -> [Rank] {
         let uniqueRanks = Set(hand.map { $0.rank })
         return Array(uniqueRanks)
@@ -73,11 +78,11 @@ class Player: ObservableObject, Identifiable {
         return hand.contains { $0.rank == rank }
     }
 
-    // Choose a rank to ask for from another player
-    func chooseCardToAskFor() -> Rank? {
-        // TODO: Implement logic to send the cards to the player who asked for them
-       return nil
-    }
+//    // Choose a rank to ask for from another player
+//    func chooseCardToAskFor() -> Rank? {
+//        // TODO: Implement logic to send the cards to the player who asked for them
+//       return nil
+//    }
 
     func sortHand() {
         hand = hand.sorted { (lhs, rhs) in

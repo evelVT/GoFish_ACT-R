@@ -242,8 +242,7 @@ struct DrawpileView: View {
         game.running ? (game.canFish ? game.goFish() : nil ) : game.startNew()
     }
     func nextPlayer() {
-        print("next player!")
-        game.nextPlayer()
+        game.changeTurn()
     }
 }
 

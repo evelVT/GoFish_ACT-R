@@ -60,7 +60,7 @@ struct GFModel {
 
     //model-is-asked-has-no
     mutating func noCard(_ rank: Rank){
-        print("Model \(self.id) checked and DOES NOT HAVE a \(rank.description)")
+        print("Model \(self.id) checked and DOES NOT HAVE any cards of rank \(rank.description)")
         model.modifyLastAction(slot: "rank", value : rank.description)
         model.modifyLastAction(slot: "isThere", value : "no")
         model.run()
@@ -75,12 +75,12 @@ struct GFModel {
     }
 
     //checkTurn-M and checkTurn-M-Again
-    mutating func myTurn(){
+    mutating func myTurn(_ turnType: String){
         print("It's model \(self.id)'s turn")
         if let modelActionString = model.lastAction(slot: "status") {
             print(modelActionString)
         }
-        model.modifyLastAction(slot:"player", value: "model_turn")
+        model.modifyLastAction(slot:"player", value: turnType)
         model.run()
     }
     
@@ -131,10 +131,15 @@ struct GFModel {
     }
     
     //check-set
-    mutating func checkSet( _ seenRank: Rank, _ numberRank: Int){
+    mutating func checkSet( _ seenRank: Rank, _ numR: Int){
         print("Model \(self.id) is checking if they have a set of \(seenRank)")
         model.modifyLastAction(slot: "rank", value: seenRank.description )
-        model.modifyLastAction(slot: "number", value: String(numberRank))
+        print(numR)
+        let form = NumberFormatter()
+        form.numberStyle = .spellOut
+        let numberRank = form.string(from: NSNumber(value: numR))!
+        print(numberRank)
+        model.modifyLastAction(slot: "number", value: numberRank)
         model.run()
     }
     

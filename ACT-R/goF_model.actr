@@ -161,7 +161,7 @@
      rank  =previousRank
    =action>
      isa Turn
-     player  model_turn
+     player  model_turn_again
 ==>
    =goal>
      state check-hand
@@ -369,7 +369,7 @@
    -retrieval>
    +action>
      isa Turn
-     player model_turn
+     player model_turn_again
 )
 
 (p still-need-after-draw
@@ -377,11 +377,11 @@
      isa goal
      state check-still-need
      rank =seenR
-     haveCards =num1
+     haveCards =num
      status Draw
    =retrieval>
      isa fullSet
-     - needCards =num1
+     - needCards =num
  ==>
    =goal>
      state checkTurn
