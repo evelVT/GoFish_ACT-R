@@ -1,0 +1,435 @@
+;;; Model of Go Fish
+;;;
+
+(add-dm
+    (4Full isa fullSet needCards four)
+    (goal isa goal state start)
+)
+
+(set-all-baselevels -100 10) ;; time offset and number of references
+
+;; At the start of the model, retrieve any decision
+(p game-start
+   =goal>
+     isa goal
+     state start
+==>
+   =goal>
+     isa goal
+     state checkTurn
+  +action>
+    isa Turn
+    status check
+)
+
+(p checkTurn-DiffP
+   =goal>
+     isa goal
+     state checkTurn
+   =action>
+     isa Turn
+     player  opponent_turn
+==>
+   =goal>
+     state remember-asking
+   +action>
+     isa ask
+     status listening
+)
+
+
+(p remember-player-asking-diff
+   =goal>
+     isa goal
+     state remember-asking
+   =action>
+     isa ask
+     playerAsking  =player1
+     rank  =askedR
+     playerAsked other_model
+==>
+   =goal>
+     state remember-asked
+     rank =askedR
+   +action>
+     isa which-asked
+   +imaginal>
+     isa playerHas
+     player =player1
+     rank  =askedR
+   -imaginal>
+)
+
+
+(p remember-player-asked
+   =goal>
+     isa goal
+     state remember-asked
+     rank  =askedR
+   =action>
+     isa which-asked
+     playerAsked  =player2
+==>
+   =goal>
+     state checkTurn
+   +imaginal>
+     isa playerHasNo
+     player =player2
+     rank  =askedR
+  -imaginal>
+  +action>
+     isa Turn
+)
+
+
+(p remember-player-asking-model
+   =goal>
+     isa goal
+     state remember-asking
+   =action>
+     isa ask
+     playerAsking  =player1
+     rank  =askedR
+     playerAsked model
+==>
+   =goal>
+     state check-rank
+     rank =askedR
+   +imaginal>
+     isa playerHas
+     player =player1
+     rank  =askedR
+   +action>
+     isa inHand
+     rank =askedR
+   -imaginal>
+
+)
+
+(p model-is-asked-has
+   =goal>
+     isa goal
+     state check-rank
+     rank =askedR
+   =action>
+     isa inHand
+     rank  =askedR
+     isThere  yes
+==>
+   =goal>
+     state checkTurn
+   +action>
+     isa Turn
+
+)
+
+(p model-is-asked-has-no
+   =goal>
+     isa goal
+     state check-rank
+     rank =askedR
+   =action>
+     isa inHand
+     rank  =askedR
+     isThere  no
+==>
+   =goal>
+     state checkTurn
+   +action>
+     isa Turn
+)
+
+(p checkTurn-M
+   =goal>
+     isa goal
+     state checkTurn
+   =action>
+     isa Turn
+     player  model_turn
+==>
+   =goal>
+     state check-hand
+   +action>
+     isa inHand     ;this needs to be changed to inHand when no longer forcing model to go random
+     isThere yes
+)
+
+(p checkTurn-M-again
+   =goal>
+     isa goal
+     state checkTurn
+     rank  =previousRank
+   =action>
+     isa Turn
+     player  model_turn_again
+==>
+   =goal>
+     state check-hand
+   +action>
+     isa inHand
+     rank =previousRank
+     isThere yes
+)
+
+
+(p checkHand
+   =goal>
+     isa goal
+     state check-hand
+   =action>
+     isa inHand
+     rank =seenR
+     isThere  yes
+     retrieved no
+==>
+   =goal>
+     state check-if-asked
+     rank =seenR
+  ; =action>
+   +retrieval>
+     isa playerHas
+     rank  =seenR
+)
+
+(p rank-no-one-has
+   =goal>
+     isa goal
+     state check-if-asked
+     rank =seenR
+   ?retrieval>
+     state error
+==>
+   =goal>
+     state check-hand
+   ;-retrieval>
+   +action>
+     isa inHand
+     ;rank =seenR
+     ;isThere yes
+     retrieved no
+)
+
+
+(p rank-one-has
+   =goal>
+     isa goal
+     state check-if-asked
+     rank =seenR
+   =retrieval>
+     isa playerHas
+     rank  =seenR
+     player =player1
+==>
+   =goal>
+     state request-player
+     rank =seenR
+     player  =player1
+   -retrieval>
+)
+
+(p make-request
+   =goal>
+     isa goal
+     state request-player
+     rank =seenR
+     player  =player1
+==>
+   =goal>
+     state check-response
+     rank =seenR
+   +action>
+     isa request
+     rank =seenR
+     player =player1
+     retrieved yes
+)
+
+(p cards-not-received
+   =goal>
+     isa goal
+     state check-response
+     rank =seenR
+   =action>
+     isa request
+     rank =seenR
+     player =player1
+     answer Go-fish
+     retrieved yes
+==>
+   =goal>
+     state draw
+   +action>
+     isa getFromPile
+)
+
+(p draw-card
+  =goal>
+    isa goal
+    state draw
+  =action>
+    isa getFromPile
+    rank =drawnR
+==>
+  =goal>
+    state check-set
+    rank =drawnR
+    status Draw
+  +action>
+    isa inHand
+    rank =drawnR
+)
+
+
+(p cards-received
+   =goal>
+     isa goal
+     state check-response
+     rank =seenR
+   =action>
+     isa request
+     rank =seenR
+     player =player1
+     answer yes
+     retrieved yes
+==>
+   =goal>
+     state check-set
+     rank =seenR
+     status Receive
+   +imaginal>
+     isa playerHasNo
+     player =player1
+     rank  =seenR
+   +action>
+     isa inHand
+     rank =seenR
+   -imaginal>
+)
+
+(p check-set
+   =goal>
+     isa goal
+     state check-set
+     rank =seenR
+     status =value
+   =action>
+     isa inHand
+     rank =seenR
+     number =num
+==>
+   =goal>
+     state check-still-need
+     rank =seenR
+     haveCards =num
+     status =value
+   +retrieval>
+     isa fullSet
+)
+
+(p no-need
+   =goal>
+     isa goal
+     state check-still-need
+     rank =seenR
+     haveCards =num
+     status =value
+   =retrieval>
+     isa fullSet
+     needCards =num
+ ==>
+   =goal>
+     state making-set
+   +action>
+     isa makeSet
+     rank =seenR
+   -retrieval>
+)
+
+(p make-set
+  =goal>
+   isa goal
+   state making-set
+  =action>
+   isa makeSet
+   rank =seenR
+==>
+  =goal>
+   state checkTurn
+  +action>
+   isa Turn
+   player model_turn
+)
+
+(p still-need
+   =goal>
+     isa goal
+     state check-still-need
+     rank =seenR
+     haveCards =num
+     status Receive
+   =retrieval>
+     isa fullSet
+     - needCards =num
+ ==>
+   =goal>
+     state checkTurn
+     rank  =seenR
+   -retrieval>
+   +action>
+     isa Turn
+     player model_turn_again
+)
+
+(p still-need-after-draw
+   =goal>
+     isa goal
+     state check-still-need
+     rank =seenR
+     haveCards =num
+     status Draw
+   =retrieval>
+     isa fullSet
+     - needCards =num
+ ==>
+   =goal>
+     state checkTurn
+   -retrieval>
+   +action>
+     isa Turn
+)
+
+(p no-player-has
+   =goal>
+     isa goal
+     state check-hand
+   =action>
+     isa inHand
+     retrieved no
+     player none
+==>
+   =goal>
+     state pick-random
+   +action>
+     isa pickRandom
+)
+
+(p random-pick
+   =goal>
+     isa goal
+     state pick-random
+   =action>
+     isa pickRandom
+     rank =randomR
+     player =randomP
+==>
+   =goal>
+     state request-player
+     rank =randomR
+     player  =randomP
+   ;-action>
+)
+
+
+
+(goal-focus goal)
+

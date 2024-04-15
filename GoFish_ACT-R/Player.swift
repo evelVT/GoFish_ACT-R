@@ -2,70 +2,104 @@ import SwiftUI
 //Player class
 
 class Player: ObservableObject, Identifiable {
-// Model has to be a struct
-// ACT-R is a class ?
-// update function that pulls stuff from the ACT-R/Player class --> updates the struct
-// Model struct that takes things from class ()
-// Experienced model player ? -- last details though
-// In terms of parameter tuning -- rt and noise, don't neccesarily change the others
-// decay = 0.00000000001 to test models maybe
     let id: Int
     @Published var name: String
     @Published var score = 0
     private(set) var hand: [Card] = []
+    @Published var gfModel: GFModel?
+    var strategy: String?
 
     init(id: Int, name: String) {
         self.id = id
         self.name = name
+        if id != 1  {
+            self.gfModel = GFModel(id: id)
+
+        }
+        if id == 2 {
+            strategy = "random"
+        }
+        if id == 3 {
+            strategy = "risky"
+        }
+        if id == 4 {
+            strategy = "careful"
+        }
+
     }
     func emptyHand() {
         hand.removeAll()
     }
 
-    func receiveCard(card: Card) {
+    func addCardPlayer(card: Card) {
         print("\(name) receives card!")
         hand.append(card)
+        sortHand()
         objectWillChange.send()
         print("\(name) now has \(hand.count) cards!")
-        checkForBooks()
+        makeSets()
+    }
+
+    func addCard(card: Card) {
+        print("\(name) receives card!")
+        hand.append(card)
+        sortHand()
+        objectWillChange.send()
+        print("\(name) now has \(hand.count) cards!")
+    }
+
+    func makeSets() {
+        print("Check for books in \(name)'s hand!")
+        score += checkForBooks()
+    }
+
+    func giveNoCards(ofRank rank: Rank) -> Int {
+        let matchingCards = hand.filter { $0.rank == rank }
+        let num = matchingCards.count
+        return num
+    }
+
+    func giveOneCard(ofRank rank: Rank) -> Card {
+        let matchingCards = hand.filter { $0.rank == rank }
+        let card = matchingCards.randomElement()!
+        return card
+    }
+
+    func returnRankList() -> [Rank] {
+        let uniqueRanks = Set(hand.map { $0.rank })
+        return Array(uniqueRanks)
+    }
+
+    func removeCard(card: Card) {
+        hand.removeAll(where: {$0 == card})
     }
 
     // Function that will be called when the player is asked for a specific rank
     // Returns all cards of the specified rank and removes them from the player's hand
-    func giveAllCards(ofRank rank: Card.Rank) -> [Card] {
+    func giveAllCards(ofRank rank: Rank) -> [Card] {
         let matchingCards = hand.filter { $0.rank == rank }
         hand = hand.filter { $0.rank != rank }
         return matchingCards
     }
 
     // Check if the player has a card of the specified rank
-    //$0 some weird shorthand for basically saying "for each card in hand, check if the rank is equal to the rank passed in"
-    func hasCard(ofRank rank: Card.Rank) -> Bool {
+    func hasCard(ofRank rank: Rank) -> Bool {
         return hand.contains { $0.rank == rank }
     }
 
-    // Choose a rank to ask for from another player
-    func chooseCardToAskFor() -> Card.Rank? {
-        // TODO: Implement logic to send the cards to the player who asked for them
-       return nil
-    }
 
-    // Respond to another player's request for a specific rank
-    // Changed this to actually return the cards.
-    func respondToCardRequest(card: Card) -> [Card] {
-        let hasCard = hasCard(ofRank: card.rank)
-        if hasCard {
-            let cardsGiven = giveAllCards(ofRank: card.rank)
-            // Call some function to send the cards to the player who asked for them. Maybe somehow notify the game
-            // TODO: Implement logic to send the cards to the player who asked for them
-            return cardsGiven
+
+    func sortHand() {
+        hand = hand.sorted { (lhs, rhs) in
+            if lhs.rank == rhs.rank { // <1>
+                return lhs.suit.rawValue > rhs.suit.rawValue
+            }
+
+            return lhs.rank.rawValue > rhs.rank.rawValue // <2>
         }
-        return []
     }
 
     // Method to check for books and remove them from the player's hand
-    // Returns the number of books found and removed
-    //not sure when this would be called. Each time the player receives a card? So in receiveCard?
     func checkForBooks() -> Int {
         var booksCount = 0
         let ranks = hand.map { $0.rank }
@@ -83,4 +117,6 @@ class Player: ObservableObject, Identifiable {
 
         return booksCount
     }
+
+
 }
