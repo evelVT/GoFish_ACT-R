@@ -238,7 +238,6 @@ class Game: ObservableObject {
 
         }
         addAskAction(card: selectedCard)
-       // checkHandIfEmpty(player: players[currentPlayerIndex])
         selectedPlayer = playerAsked
         objectWillChange.send()
         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
@@ -252,7 +251,6 @@ class Game: ObservableObject {
                             players[playerAsked-1].gfModel?.hasCard(selectedRank)
                             players[currentPlayerIndex].gfModel?.answeredYes(playerAsked, selectedRank)
                             let cards = players[playerAsked-1].giveAllCards(ofRank: selectedRank)
-                            //checkHandIfEmpty(player: players[playerAsked-1])
                             if !askPile.cards.isEmpty {
                                 DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                                     [self] in
@@ -278,8 +276,9 @@ class Game: ObservableObject {
                                 if numR == 4 {
                                     players[currentPlayerIndex].gfModel?.makeSet(selectedRank)
                                     players[currentPlayerIndex].makeSets()
-                                    checkGameEndConditions()
-                                   // checkHandIfEmpty(player: players[currentPlayerIndex])
+                                    if checkGameEndConditions() {
+                                                    return
+                                                }
                                     previousRank = "zero"
                                 }else{
                                     previousRank = selectedRank.description
@@ -302,8 +301,9 @@ class Game: ObservableObject {
                                 if numR == 4 {
                                     players[currentPlayerIndex].gfModel?.makeSet(card.rank)
                                     players[currentPlayerIndex].makeSets()
-                                    checkGameEndConditions()
-                                    //checkHandIfEmpty(player: players[currentPlayerIndex])
+                                    if checkGameEndConditions() {
+                                                    return
+                                                }
                                 }
                             }
                             repeatPlayer = 0
