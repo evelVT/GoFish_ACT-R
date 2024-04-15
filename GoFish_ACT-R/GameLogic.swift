@@ -50,6 +50,13 @@ class Game: ObservableObject {
         if repeatPlayer == 1{
             turnType = "model_turn_again"
         }
+        if !canPlayTurn(player: players[currentPlayerIndex]){
+            if checkGameEndConditions() {
+                return
+            }
+            nextPlayer()
+            return
+        }
         for player in players {
             if player.id != 1{
                 let currentPlayerId = currentPlayerIndex + 1
@@ -72,13 +79,6 @@ class Game: ObservableObject {
     }
 
 
-    func handleModelTurn() {
-        let currentPlayer = players[currentPlayerIndex]
-        let rankList = currentPlayer.returnRankList()
-        for rank in rankList {
-            currentPlayer.gfModel?.getCard(rank)
-        }
-    }
 
 
     func dealInitialCards() {
@@ -148,17 +148,48 @@ class Game: ObservableObject {
         objectWillChange.send()
     }
 
+    func applyStrategy(player: Player) -> [Rank] {
+        if player.strategy == "risky" {
+            let cards = player.hand
+            var rankCounts = [Rank: Int]()
+            for card in cards {
+                rankCounts[card.rank, default: 0] += 1
+            }
+            let sortedRanks = rankCounts.sorted { $0.value > $1.value}
+            return sortedRanks.map {$0.key}
+        }
+        if player.strategy == "careful" {
+            let cards = player.hand
+            var rankCounts = [Rank: Int]()
+            for card in cards {
+                rankCounts[card.rank, default: 0] += 1
+            }
+            let sortedRanks = rankCounts.sorted { $0.value < $1.value}
+            return sortedRanks.map {$0.key}
+        }
+        var ranksInHand = player.returnRankList()
+        ranksInHand.shuffle()
+        return ranksInHand
+    }
+
 
     func handleModelTurn(_ index: Int) {
-
+        if !canPlayTurn(player: players[currentPlayerIndex]) {
+            nextPlayer()
+            return
+        }
+        //canPlayTurn(player: players[currentPlayerIndex])
+        print(players[currentPlayerIndex].hand.count)
         var ids = [1, 2, 3, 4]
         let removeIndex = currentPlayerIndex + 1
         if removeIndex < ids.count + 1 {
             ids.remove(at: removeIndex-1)
         }
         var playerAsked = -1
-        var ranksInHand = players[currentPlayerIndex].returnRankList()
-        ranksInHand.shuffle()
+        //checkHandIfEmpty(player: players[currentPlayerIndex])
+        //var ranksInHand = players[currentPlayerIndex].returnRankList()
+       // ranksInHand.shuffle()
+        var ranksInHand = applyStrategy(player: players[currentPlayerIndex])
         var selected_player_id = -1
         var selectedRank = ranksInHand[0]
         var selectedCard = players[currentPlayerIndex].giveOneCard(ofRank: selectedRank)
@@ -207,6 +238,7 @@ class Game: ObservableObject {
 
         }
         addAskAction(card: selectedCard)
+       // checkHandIfEmpty(player: players[currentPlayerIndex])
         selectedPlayer = playerAsked
         objectWillChange.send()
         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
@@ -220,6 +252,7 @@ class Game: ObservableObject {
                             players[playerAsked-1].gfModel?.hasCard(selectedRank)
                             players[currentPlayerIndex].gfModel?.answeredYes(playerAsked, selectedRank)
                             let cards = players[playerAsked-1].giveAllCards(ofRank: selectedRank)
+                            //checkHandIfEmpty(player: players[playerAsked-1])
                             if !askPile.cards.isEmpty {
                                 DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                                     [self] in
@@ -246,6 +279,7 @@ class Game: ObservableObject {
                                     players[currentPlayerIndex].gfModel?.makeSet(selectedRank)
                                     players[currentPlayerIndex].makeSets()
                                     checkGameEndConditions()
+                                   // checkHandIfEmpty(player: players[currentPlayerIndex])
                                     previousRank = "zero"
                                 }else{
                                     previousRank = selectedRank.description
@@ -269,6 +303,7 @@ class Game: ObservableObject {
                                     players[currentPlayerIndex].gfModel?.makeSet(card.rank)
                                     players[currentPlayerIndex].makeSets()
                                     checkGameEndConditions()
+                                    //checkHandIfEmpty(player: players[currentPlayerIndex])
                                 }
                             }
                             repeatPlayer = 0
@@ -289,7 +324,20 @@ class Game: ObservableObject {
         }
     }
 
-
+    func canPlayTurn(player: Player) -> Bool{
+        if player.hand.count == 0 {
+            print("PLAYER \(player.id) HAD NO CARDS SO HE DREW")
+            if let card = deck.dealCard(){
+                print("Player \(player.id) drew a \(card.rank)")
+                player.addCard(card: card)
+                return true
+            }
+            else {
+                return false
+            }
+        }
+        return true
+    }
 
     func processAskActionUser(player: Player) {
         selectedPlayer = player.id
@@ -371,7 +419,7 @@ class Game: ObservableObject {
     }
 
 
-    private func checkGameEndConditions() {
+    private func checkGameEndConditions() -> Bool {
         var cardsInPlay = 0
         for player in players {
             cardsInPlay += player.hand.count
@@ -379,10 +427,13 @@ class Game: ObservableObject {
         if cardsInPlay == 0 {
             if deck.cards.count > 0 {
                 print("ERROR: game end while deck not empty!")
+                return false
             }
             running.toggle()
             sortPlayers()
+            return true
         }
+        return false
     }
     
     // Sort players based on score in sortedPlayers array (highest to lowest)
