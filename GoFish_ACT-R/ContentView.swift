@@ -206,39 +206,37 @@ struct DrawpileView: View {
 
             }
             .padding()
-            Button(action: nextPlayer) {
-                ZStack {
-                    RoundedRectangle(cornerRadius: 15)
-                        .strokeBorder(isDropTargeted ? Color.black : Color.red)
-                        .background(Color.red.opacity(hoverEl1 ? 0.5 : 1))
-                        .clipShape(RoundedRectangle(cornerRadius: 15))
-                        .frame(maxHeight:200)
-                    VStack {
-                        HStack {
-                            if game.askPile.cards.count >= 1 {
-                                CardView(game: game, card: game.askPile.cards[0])
-                            }
-                            if game.askPile.cards.count >= 2 {
-                                CardView(game: game, card: game.askPile.cards[1])
-                            }                        }
-                        Text("Ask Pile")
-                            .foregroundStyle(.black)
-                            .onHover { hover in
-                                print("Mouse hover: \(hover)")
-                                hoverEl1 = hover
-                            }
-                        HStack {
-                            if game.askPile.cards.count >= 3 {
-                                CardView(game: game, card: game.askPile.cards[2])
-                            }
-                            if game.askPile.cards.count >= 4 {
-                                CardView(game: game, card: game.askPile.cards[3])
-                            }
+            ZStack {
+                RoundedRectangle(cornerRadius: 15)
+                    .strokeBorder(isDropTargeted ? Color.black : Color.red)
+                    .background(Color.red.opacity(hoverEl1 ? 0.5 : 1))
+                    .clipShape(RoundedRectangle(cornerRadius: 15))
+                    .frame(maxHeight:200)
+                VStack {
+                    HStack {
+                        if game.askPile.cards.count >= 1 {
+                            CardView(game: game, card: game.askPile.cards[0])
+                        }
+                        if game.askPile.cards.count >= 2 {
+                            CardView(game: game, card: game.askPile.cards[1])
+                        }                        }
+                    Text("Ask Pile")
+                        .foregroundStyle(.black)
+                        .onHover { hover in
+                            print("Mouse hover: \(hover)")
+                            hoverEl1 = hover
+                        }
+                    HStack {
+                        if game.askPile.cards.count >= 3 {
+                            CardView(game: game, card: game.askPile.cards[2])
+                        }
+                        if game.askPile.cards.count >= 4 {
+                            CardView(game: game, card: game.askPile.cards[3])
                         }
                     }
                 }
-                .padding()
             }
+            .padding()
         }
     }
     func pileAction() {
